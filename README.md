@@ -1,1 +1,1 @@
-# Programowanie-w-jezyku-Python-Jakub-Grzes-Krzysztof-Goluchowski
+The repository contains the Tower Defense game written in Python as part of the Python programming course.

@@ -1,1 +1,1 @@
-800
+quit_text = title_font.render("Quit", True, 'yellow')

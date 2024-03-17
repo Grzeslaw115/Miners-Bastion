@@ -48,7 +48,11 @@ while True:
                 if 1024 - settings.get_width() - 10 <= event.pos[0] <= 1024 - 10 and 10 <= event.pos[1] <= 10 + settings.get_height():
                     button_click_sound.play()
                     pygame.mixer.music.stop()
+<<<<<<< HEAD
                     exec(open("settingsPanel.py").read())
+=======
+                    settingsPanel.main()
+>>>>>>> fd1f53ab7d447a96908ceae5e6996b2a1637e057
                     exit()
 
                 # Wyjscie z gry

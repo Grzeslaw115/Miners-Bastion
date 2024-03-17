@@ -13,6 +13,7 @@ pygame.mixer.init()
 pygame.mixer.music.load("audio/menu/menu.mp3")
 pygame.mixer.music.set_volume(VOLUME / 100)
 pygame.mixer.music.play(-1)
+button_click_sound = pygame.mixer.Sound("audio/menu/button_click.mp3")
 
 class SaveButton():
     def __init__(self, screen):
@@ -66,7 +67,7 @@ class VolumeSlider():
         text_pos = (self.slider_rect.centerx - text_surf.get_width() / 2, self.slider_rect.top - 30)
         self.screen.blit(text_surf, text_pos)
 
-        name_surf = self.font.render("Głośność", True, WHITE)
+        name_surf = self.font.render("Glosnosc", True, WHITE)
         name_pos = (self.start + (self.end - self.start) / 2 - name_surf.get_width() / 2, self.slider_rect.top - 60)
         self.screen.blit(name_surf, name_pos)
 
@@ -96,6 +97,7 @@ while True:
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 if save_button.rect.collidepoint(event.pos):
+                    button_click_sound.play()
                     save_button.save_settings(current_volume)
 
                 if volume_slider.slider_rect.collidepoint(event.pos):
@@ -104,7 +106,7 @@ while True:
         if event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:
                 volume_slider.dragging = False
-                
+
     screen.fill(BLACK)
 
     save_button.draw()

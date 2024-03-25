@@ -8,8 +8,6 @@ def main():
     pygame.init()
     clock = pygame.time.Clock()
 
-
-
     # Images and sounds
     level1img = pygame.image.load("graphics/levelSelection/level1.png").convert_alpha()
     level2img = pygame.image.load("graphics/levelSelection/level2.png").convert_alpha()
@@ -29,20 +27,14 @@ def main():
                 if 64 <= event.pos[0] <= 64 + level1img.get_width() and 1024 / 2 - level1img.get_height() / 2 <= event.pos[1] <= 1024 / 2 + level1img.get_height() / 2:
                     button_click_sound.play()
                     level1.main()
-                    pygame.quit()
-                    exit()
 
                 elif 128 + level1img.get_width() <= event.pos[0] <= 128 + 2 * level1img.get_width() and 1024 / 2 - level2img.get_height() / 2 <= event.pos[1] <= 1024 / 2 + level2img.get_height() / 2:
                     button_click_sound.play()
                     level2.main()
-                    pygame.quit()
-                    exit()
 
                 elif 192 + 2 * level2img.get_width() <= event.pos[0] <= 192 + 3 * level2img.get_width() and 1024 / 2 - level2img.get_height() / 2 <= event.pos[1] <= 1024 / 2 + level2img.get_height() / 2:
                     button_click_sound.play()
                     level3.main()
-                    exit()
-                    pygame.quit()
 
         screen.blit(level1img, (64, 1024 / 2 - level1img.get_height() / 2))
         screen.blit(level2img, (128 + level1img.get_width(), 1024 / 2 - level2img.get_height() / 2))

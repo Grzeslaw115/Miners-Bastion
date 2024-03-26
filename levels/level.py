@@ -4,7 +4,7 @@ import json
 from .world import World
 
 
-def main():
+def load_level(level):
     # Initialize the game
     pg.init()
     clock = pg.time.Clock()
@@ -15,11 +15,11 @@ def main():
 
     # Images
     enemy_image = pg.image.load("graphics/enemies/integrate.png").convert_alpha()
-    map_image = pg.image.load("graphics/maps/level3.png").convert_alpha()
+    map_image = pg.image.load("graphics/maps/" + level + ".png").convert_alpha()
 
     # Load json data for level
-    with open('levels/level3.tmj') as file:
-        world_data = json.load(file)
+    with open('levels/'+level+'.tmj') as infile:
+        world_data = json.load(infile)
 
     # Create world
     world = World(world_data, map_image)

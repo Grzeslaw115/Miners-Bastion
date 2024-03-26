@@ -1,77 +1,86 @@
 import pygame
 from sys import exit
-import levelSelection
-from settings import *
-import settingsPanel
+from settingsLoader import load_settings, reset_to_default
+from levelSelection import main as levelSelection
+from settingsPanel import main as settingsPanel
 
-# Initialize the game
+# Initialize Pygame
 pygame.init()
 pygame.mixer.init()
+
+# Load settings
+reset_to_default()
+settings = load_settings()
+
+# Screen setup
+SCREEN_WIDTH = settings['SCREEN_WIDTH']
+SCREEN_HEIGHT = settings['SCREEN_HEIGHT']
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Miners' Bastion")
-title_font = pygame.font.Font("fonts/heav.ttf", 128)
-clock = pygame.time.Clock()
 
-# Music and sounds
+# Load fonts, music, and sounds
+title_font = pygame.font.Font("fonts/heav.ttf", 128)
 pygame.mixer.music.load("audio/menu/menu.mp3")
 button_click_sound = pygame.mixer.Sound("audio/menu/button_click.mp3")
 pygame.mixer.music.play(-1)
-music_on = True
 
-# Texts and images
+# Load and scale images
 background = pygame.image.load("graphics/menu/background.png").convert_alpha()
-start = pygame.image.load("graphics/menu/start.png").convert_alpha()
-start = pygame.transform.scale(start, (start.get_width() * 1/5, start.get_height() * 1/5))
-settings = pygame.image.load("graphics/menu/settings.png").convert_alpha()
-settings = pygame.transform.scale(settings, (settings.get_width() * 1/5, settings.get_height() * 1/5))
-exit_button = pygame.image.load("graphics/menu/exit.png").convert_alpha()
-exit_button = pygame.transform.scale(exit_button, (exit_button.get_width() * 1/6, exit_button.get_height() * 1/6))
+start_img = pygame.image.load("graphics/menu/start.png").convert_alpha()
+settings_img = pygame.image.load("graphics/menu/settings.png").convert_alpha()
+exit_img = pygame.image.load("graphics/menu/exit.png").convert_alpha()
+start_img = pygame.transform.scale(start_img, (start_img.get_width() * 1/5, start_img.get_height() * 1/5))
+settings_img = pygame.transform.scale(settings_img, (settings_img.get_width() * 1/5, settings_img.get_height() * 1/5))
+exit_img = pygame.transform.scale(exit_img, (exit_img.get_width() * 1/6, exit_img.get_height() * 1/6))
 
+# Render text
 text_title = title_font.render("Miners' Bastion", True, 'yellow')
 
+# Animation variables
 background_y = 800
 moving_up = True
 
+current_state = 'MAIN_MENU'
+def back_to_main_menu():
+    global current_state
+    current_state = 'MAIN_MENU'
+
 # Main loop
 while True:
+    dt = pygame.time.Clock().tick(60) / 1000
 
-    dt = clock.tick(60) / 1000
+    settings = load_settings()
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.mixer.music.stop()
             pygame.quit()
             exit()
-
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1:
-                # Muzyka, docelowo tu beda ustawienia
-                if 1024 - settings.get_width() - 10 <= event.pos[0] <= 1024 - 10 and 10 <= event.pos[1] <= 10 + settings.get_height():
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            mouse_x, mouse_y = event.pos
+            # Settings button
+            if settings_img.get_rect(center=(SCREEN_WIDTH - settings_img.get_width() / 2 - 10, 10)).collidepoint(mouse_x, mouse_y):
+                if settings['SOUND_EFFECTS']:
                     button_click_sound.play()
-                    pygame.mixer.music.stop()
-                    exec(open("settingsPanel.py").read())
-                    exit()
-
-                # Wyjscie z gry
-                elif 1024 / 2 - exit_button.get_width() / 2 <= event.pos[0] <= 1024 / 2 + exit_button.get_width() / 2 and 450 <= event.pos[1] <= 450 + exit_button.get_height():
-                    pygame.mixer.music.stop()
-                    pygame.quit()
-                    exit()
-
-                # Rozpoczecie gry
-                elif 1024 / 2 - start.get_width() / 2 <= event.pos[0] <= 1024 / 2 + start.get_width() / 2 and 300 <= event.pos[1] <= 300 + start.get_height():
+                current_state = 'SETTINGS'
+            # Exit button
+            elif exit_img.get_rect(center=(SCREEN_WIDTH / 2, 450)).collidepoint(mouse_x, mouse_y):
+                pygame.mixer.music.stop()
+                pygame.quit()
+                exit()
+            # Start button
+            elif start_img.get_rect(center=(SCREEN_WIDTH / 2, 300)).collidepoint(mouse_x, mouse_y):
+                if settings['SOUND_EFFECTS']:
                     button_click_sound.play()
-                    levelSelection.main()
-                    pygame.mixer.music.stop()
-                    pygame.quit()
-                    exit()
+                current_state = 'LEVEL_SELECTION'
 
     screen.blit(background, (0, 0))
-    screen.blit(start, (1024 / 2 - start.get_width() / 2, 300))
-    screen.blit(text_title, (1024 / 2 - text_title.get_width() / 2, background_y))
-    screen.blit(settings, (1024 - settings.get_width() - 10, 10))
-    screen.blit(exit_button, (1024 / 2 - exit_button.get_width() / 2, 450))
+    screen.blit(start_img, (SCREEN_WIDTH / 2 - start_img.get_width() / 2, 300))
+    screen.blit(text_title, (SCREEN_WIDTH / 2 - text_title.get_width() / 2, background_y))
+    screen.blit(settings_img, (SCREEN_WIDTH - settings_img.get_width() - 10, 10))
+    screen.blit(exit_img, (SCREEN_WIDTH / 2 - exit_img.get_width() / 2, 450))
 
-    # Animacja tytułu
+    # Title animation
     if moving_up:
         background_y -= 60 * dt
         if background_y <= 800:
@@ -82,4 +91,16 @@ while True:
             moving_up = True
 
     pygame.display.update()
-    clock.tick(60)
+
+    # Handle state transitions
+    if current_state == 'SETTINGS':
+        settingsPanel(back_to_main_menu)
+    
+    if current_state == 'LEVEL_SELECTION':
+        levelSelection(back_to_main_menu)
+
+    if current_state == 'MAIN_MENU':
+        if not pygame.mixer.music.get_busy():
+            pygame.mixer.music.play(-1)
+
+main()

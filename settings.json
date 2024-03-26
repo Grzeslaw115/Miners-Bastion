@@ -1,0 +1,9 @@
+{
+    "VOLUME": 92,
+    "SOUND_EFFECTS": true,
+    "SCREEN_WIDTH": 1024,
+    "SCREEN_HEIGHT": 1024,
+    "WHITE": "#ffffff",
+    "BLACK": "#000000",
+    "GRAY": "#808080"
+}

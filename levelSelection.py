@@ -3,7 +3,7 @@ import sys
 from levels import level1, level2, level3
 
 
-def main():
+def main(callback):
     # Initialize the game
     pygame.init()
     clock = pygame.time.Clock()

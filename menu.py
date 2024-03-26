@@ -1,14 +1,15 @@
 import pygame
 from sys import exit
-from settingsLoader import load_settings
-from settingsPanel import main as settingsPanel
+from settingsLoader import load_settings, reset_to_default
 from levelSelection import main as levelSelection
+from settingsPanel import main as settingsPanel
 
 # Initialize Pygame
 pygame.init()
 pygame.mixer.init()
 
 # Load settings
+reset_to_default()
 settings = load_settings()
 
 # Screen setup
@@ -28,8 +29,6 @@ background = pygame.image.load("graphics/menu/background.png").convert_alpha()
 start_img = pygame.image.load("graphics/menu/start.png").convert_alpha()
 settings_img = pygame.image.load("graphics/menu/settings.png").convert_alpha()
 exit_img = pygame.image.load("graphics/menu/exit.png").convert_alpha()
-
-# Scale images (consider moving this into a function or loop for cleaner code)
 start_img = pygame.transform.scale(start_img, (start_img.get_width() * 1/5, start_img.get_height() * 1/5))
 settings_img = pygame.transform.scale(settings_img, (settings_img.get_width() * 1/5, settings_img.get_height() * 1/5))
 exit_img = pygame.transform.scale(exit_img, (exit_img.get_width() * 1/6, exit_img.get_height() * 1/6))
@@ -41,12 +40,16 @@ text_title = title_font.render("Miners' Bastion", True, 'yellow')
 background_y = 800
 moving_up = True
 
-# State management
 current_state = 'MAIN_MENU'
+def back_to_main_menu():
+    global current_state
+    current_state = 'MAIN_MENU'
 
 # Main loop
 while True:
     dt = pygame.time.Clock().tick(60) / 1000
+
+    settings = load_settings()
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -91,13 +94,13 @@ while True:
 
     # Handle state transitions
     if current_state == 'SETTINGS':
-        settingsPanel()
-        current_state = 'MAIN_MENU'
+        settingsPanel(back_to_main_menu)
     
     if current_state == 'LEVEL_SELECTION':
-        levelSelection()
-        current_state = 'MAIN_MENU'
+        levelSelection(back_to_main_menu)
 
     if current_state == 'MAIN_MENU':
-        if not pygame.mixer.music.get_busy():  # Sprawdza, czy muzyka nie jest już odtwarzana
+        if not pygame.mixer.music.get_busy():
             pygame.mixer.music.play(-1)
+
+main()

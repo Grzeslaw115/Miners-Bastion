@@ -3,8 +3,7 @@ import sys
 from settingsLoader import *
 import json
 
-
-def main():
+def main(callback):
     # Initialize Pygame
     pygame.init()
 
@@ -118,8 +117,11 @@ def main():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     if save_button.rect.collidepoint(event.pos):
-                        button_click_sound.play()
-                    save_settings(current_volume, local_sound_effects)
+                        if local_sound_effects:
+                            button_click_sound.play()
+                        save_settings(current_volume, local_sound_effects)
+                        callback()
+                        return
 
                     if volume_slider.slider_rect.collidepoint(event.pos):
                         volume_slider.dragging = True
@@ -133,6 +135,8 @@ def main():
                         if local_sound_effects:
                             button_click_sound.play()
                         reset_to_default()
+                        callback()
+                        return
 
             if event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:
@@ -148,5 +152,3 @@ def main():
 
         pygame.display.flip()
         current_volume = volume_slider.current_value
-
-main()

@@ -16,17 +16,17 @@ def main(callback):
 
     # Initialize Pygame mixer
     pygame.mixer.init()
-    pygame.mixer.music.load("audio/menu/menu.mp3")
+    pygame.mixer.music.load("assets/audio/menu/menu.mp3")
     pygame.mixer.music.set_volume(current_volume / 100)
     pygame.mixer.music.play(-1)
-    button_click_sound = pygame.mixer.Sound("audio/menu/button_click.mp3")
+    button_click_sound = pygame.mixer.Sound("assets/audio/menu/button_click.mp3")
 
     class Button():
         def __init__(self, screen, text, height = settings['SCREEN_HEIGHT'] - 100):
             self.screen = screen
             self.color = settings['WHITE']
             self.hover_color = settings['GRAY']
-            self.font = pygame.font.Font("fonts/heav.ttf", 48)
+            self.font = pygame.font.Font("assets/fonts/heav.ttf", 48)
             self.text = self.font.render(text, True, settings['BLACK'])
             self.rect = self.text.get_rect(center=(settings['SCREEN_WIDTH'] / 2, height))
 
@@ -81,7 +81,7 @@ def main(callback):
             self.screen = screen
             self.color = settings['WHITE']
             self.hover_color = settings['GRAY']
-            self.font = pygame.font.Font("fonts/heav.ttf", 48)
+            self.font = pygame.font.Font("assets/fonts/heav.ttf", 48)
             self.update_text()
             self.rect = self.text.get_rect(center=(settings['SCREEN_WIDTH'] / 2, settings['SCREEN_HEIGHT'] - 200))
 

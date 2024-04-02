@@ -12,7 +12,7 @@ def main(callback):
     level1img = pygame.image.load("graphics/levelSelection/level1.png").convert_alpha()
     level2img = pygame.image.load("graphics/levelSelection/level2.png").convert_alpha()
     level3img = pygame.image.load("graphics/levelSelection/level3.png").convert_alpha()
-    button_click_sound = pygame.mixer.Sound("audio/menu/button_click.mp3")
+    button_click_sound = pygame.mixer.Sound("assets/audio/menu/button_click.mp3")
 
     # Set the screen size
     screen = pygame.display.set_mode((1024, 1024))

@@ -19,9 +19,9 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Miners' Bastion")
 
 # Load fonts, music, and sounds
-title_font = pygame.font.Font("fonts/heav.ttf", 128)
-pygame.mixer.music.load("audio/menu/menu.mp3")
-button_click_sound = pygame.mixer.Sound("audio/menu/button_click.mp3")
+title_font = pygame.font.Font("assets/fonts/heav.ttf", 128)
+pygame.mixer.music.load("assets/audio/menu/menu.mp3")
+button_click_sound = pygame.mixer.Sound("assets/audio/menu/button_click.mp3")
 pygame.mixer.music.play(-1)
 
 # Load and scale images

@@ -13,22 +13,48 @@ SCREEN_WIDTH = settings['SCREEN_WIDTH']
 SCREEN_HEIGHT = settings['SCREEN_HEIGHT']
 
 
-def create_turret(mouse_pos, turret_image, turret_group, world):
+def create_turret(mouse_pos, turret_image, turret_group, world, level):
     x_coord, y_coord = mouse_pos[0] // c.TILE_SIZE, mouse_pos[1] // c.TILE_SIZE
 
     mouse_tile_num = (y_coord * c.COLUMNS) + x_coord
 
-    if world.tile_map[mouse_tile_num] in [95, 148, 145, 7, 10]:
-        # Check if turret is already there
-        is_space_free = True
-        for turret in turret_group:
-            if x_coord == turret.tile_x and y_coord == turret.tile_y:
-                is_space_free = False
-                break
+    if level == "level1":
+        if world.tile_map[mouse_tile_num] in [95, 148, 145, 7, 10]:
+            # Check if turret is already there
+            is_space_free = True
+            for turret in turret_group:
+                if x_coord == turret.tile_x and y_coord == turret.tile_y:
+                    is_space_free = False
+                    break
 
-        if is_space_free:
-            new_turret = Turret(turret_image, x_coord, y_coord)
-            turret_group.add(new_turret)
+            if is_space_free:
+                new_turret = Turret(turret_image, x_coord, y_coord)
+                turret_group.add(new_turret)
+    elif level == "level2":
+        if world.tile_map[mouse_tile_num] in [115, 165, 168, 30, 27]:
+            # Check if turret is already there
+            is_space_free = True
+            for turret in turret_group:
+                if x_coord == turret.tile_x and y_coord == turret.tile_y:
+                    is_space_free = False
+                    break
+
+            if is_space_free:
+                new_turret = Turret(turret_image, x_coord, y_coord)
+                turret_group.add(new_turret)
+    elif level == "level3":
+        if world.tile_map[mouse_tile_num] in [667, 579, 582, 717, 720]:
+            # Check if turret is already there
+            is_space_free = True
+            for turret in turret_group:
+                if x_coord == turret.tile_x and y_coord == turret.tile_y:
+                    is_space_free = False
+                    break
+
+            if is_space_free:
+                new_turret = Turret(turret_image, x_coord, y_coord)
+                turret_group.add(new_turret)
+
 
 def load_level(level):
     # Initialize the game
@@ -62,7 +88,7 @@ def load_level(level):
     # Enemies parameters
     last_enemy_spawn = 0
     last_speed_change = 0
-    last_enemy_speed = 10
+    last_enemy_speed = 2
 
     # Create groups
     enemy_group = pg.sprite.Group()
@@ -82,7 +108,7 @@ def load_level(level):
                 mouse_pos = pg.mouse.get_pos()
                 if mouse_pos[0] < SCREEN_WIDTH and mouse_pos[1] < SCREEN_HEIGHT:
                     if placing_turrets:
-                        create_turret(mouse_pos, turret_image, turret_group, world)
+                        create_turret(mouse_pos, turret_image, turret_group, world, level)
 
         screen.fill("black")
         current_time = pg.time.get_ticks()

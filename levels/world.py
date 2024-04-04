@@ -23,7 +23,8 @@ class World():
         for point in data:
             temp_x = point.get("x")
             temp_y = point.get("y")
-            self.waypoints.append((temp_x, temp_y))
+
+            self.waypoints.append((temp_x + 832, temp_y)) # UWAGA! reczne przesuniecie punktow dla level1, trzeba to zmienic
 
     def draw(self, surface):
         surface.blit(self.image, (0, 0))

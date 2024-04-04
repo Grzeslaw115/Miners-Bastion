@@ -6,6 +6,7 @@ from .turret import Turret
 from settingsLoader import load_settings
 import constants as c
 from button import Button
+from .enemy import Enemy
 
 settings = load_settings()
 SCREEN_WIDTH = settings['SCREEN_WIDTH']
@@ -29,7 +30,6 @@ def create_turret(mouse_pos, turret_image, turret_group, world):
             new_turret = Turret(turret_image, x_coord, y_coord)
             turret_group.add(new_turret)
 
-
 def load_level(level):
     # Initialize the game
     pg.init()
@@ -39,7 +39,7 @@ def load_level(level):
     screen = pg.display.set_mode((1024 + c.SIDE_PANEL, 1024))
 
     placing_turrets = False
-
+    game_over = False
 
     # Images
     enemy_image = pg.image.load("graphics/enemies/integrate.png").convert_alpha()
@@ -48,6 +48,8 @@ def load_level(level):
     turret_button_image = pg.image.load("graphics/buttons/turret1_button.png").convert_alpha()
     cancel_button_image = pg.image.load("graphics/buttons/cancel_button.png").convert_alpha()
     cursor_turret = pg.image.load("graphics/turrets/towerDefense_tile249.png").convert_alpha()
+    enemy_image = pg.image.load("graphics/enemies/integrate.png").convert_alpha()
+    enemy_image = pg.transform.scale(enemy_image, (enemy_image.get_width() * 1/8, enemy_image.get_height() * 1/8))
 
     # Load json data for level
     with open('levels/'+level+'.tmj') as infile:
@@ -57,14 +59,18 @@ def load_level(level):
     world = World(world_data, map_image)
     world.process_data()
 
+    # Enemies parameters
+    last_enemy_spawn = 0
+    last_speed_change = 0
+    last_enemy_speed = 10
+
     # Create groups
+    enemy_group = pg.sprite.Group()
     turret_group = pg.sprite.Group()
 
     # Create buttons
     turret_button = Button(1024, 120, turret_button_image, True)
     cancel_button = Button(1024, 924, cancel_button_image, True)
-
-
 
     while True:
         for event in pg.event.get():
@@ -79,10 +85,26 @@ def load_level(level):
                         create_turret(mouse_pos, turret_image, turret_group, world)
 
         screen.fill("black")
+        current_time = pg.time.get_ticks()
+
+        # Co 5 sekund spawnujemy nowego przeciwnika, co 10 sekund zwiekszamy predkosc przeciwnikow
+        if current_time - last_enemy_spawn > 5000:
+            last_enemy_spawn = current_time
+            new_enemy = Enemy(world.waypoints, enemy_image, last_enemy_speed)
+            enemy_group.add(new_enemy)
+        
+        if current_time - last_enemy_spawn > 10000:
+            last_enemy_speed += 0.1
+            last_speed_change = current_time
 
         # Draw
         world.draw(screen)
         turret_group.draw(screen)
+        for enemy in enemy_group:
+            enemy.update()
+            enemy.draw(screen)
+            if enemy.current_waypoint_index == len(world.waypoints) - 1: # Enemy reached the end, game over
+                game_over = True
 
         if turret_button.draw(screen):
             placing_turrets = True
@@ -99,3 +121,7 @@ def load_level(level):
 
         clock.tick(60)
         pg.display.update()
+
+        # Game over screen
+        if game_over:
+            pass

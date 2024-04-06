@@ -12,7 +12,6 @@ settings = load_settings()
 SCREEN_WIDTH = settings['SCREEN_WIDTH']
 SCREEN_HEIGHT = settings['SCREEN_HEIGHT']
 
-
 def create_turret(mouse_pos, turret_image, turret_group, world, level):
     x_coord, y_coord = mouse_pos[0] // c.TILE_SIZE, mouse_pos[1] // c.TILE_SIZE
 
@@ -88,10 +87,12 @@ def load_level(level):
     # Enemies parameters
     last_enemy_spawn = 0
     last_speed_change = 0
-    last_enemy_speed = 2
+    last_enemy_speed = 20
+    first_enemy = Enemy(world.waypoints, enemy_image, last_enemy_speed)
 
     # Create groups
     enemy_group = pg.sprite.Group()
+    enemy_group.add(first_enemy)
     turret_group = pg.sprite.Group()
 
     # Create buttons
@@ -99,26 +100,26 @@ def load_level(level):
     cancel_button = Button(1024, 924, cancel_button_image, True)
 
     while True:
+        if game_over:
+            break
+
         for event in pg.event.get():
-            if event.type == pg.QUIT:
-                pg.quit()
-                sys.exit()
+                if event.type == pg.QUIT:
+                    pg.quit()
+                    sys.exit()
 
-            if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
-                mouse_pos = pg.mouse.get_pos()
-                if mouse_pos[0] < SCREEN_WIDTH and mouse_pos[1] < SCREEN_HEIGHT:
-                    if placing_turrets:
-                        create_turret(mouse_pos, turret_image, turret_group, world, level)
+                if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
+                    mouse_pos = pg.mouse.get_pos()
+                    if mouse_pos[0] < SCREEN_WIDTH and mouse_pos[1] < SCREEN_HEIGHT:
+                        if placing_turrets:
+                            create_turret(mouse_pos, turret_image, turret_group, world, level)
 
-        screen.fill("black")
         current_time = pg.time.get_ticks()
-
-        # Co 5 sekund spawnujemy nowego przeciwnika, co 10 sekund zwiekszamy predkosc przeciwnikow
+        # We spawn a new enemy every 5 seconds and increase the speed every 10 seconds
         if current_time - last_enemy_spawn > 5000:
             last_enemy_spawn = current_time
             new_enemy = Enemy(world.waypoints, enemy_image, last_enemy_speed)
             enemy_group.add(new_enemy)
-        
         if current_time - last_enemy_spawn > 10000:
             last_enemy_speed += 0.1
             last_speed_change = current_time
@@ -129,25 +130,33 @@ def load_level(level):
         for enemy in enemy_group:
             enemy.update()
             enemy.draw(screen)
-            if enemy.current_waypoint_index == len(world.waypoints) - 1: # Enemy reached the end, game over
+            if enemy.current_waypoint_index == len(world.waypoints):
                 game_over = True
 
         if turret_button.draw(screen):
             placing_turrets = True
-
         if placing_turrets:
             cursor_rect = cursor_turret.get_rect()
             cursor_pos = pg.mouse.get_pos()
             cursor_rect.center = cursor_pos
             if cursor_pos[0] <= 1024:
                 screen.blit(cursor_turret, cursor_rect)
-
             if cancel_button.draw(screen):
                 placing_turrets = False
 
         clock.tick(60)
         pg.display.update()
 
-        # Game over screen
-        if game_over:
-            pass
+    # Game over screen
+    while True:
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()
+                sys.exit()
+
+        screen.fill((0, 0, 0))
+        font = pg.font.Font(None, 74)
+        text = font.render("Game Over", True, (255, 255, 255))
+        screen.blit(text, (512, 512))
+        pg.display.update()
+        clock.tick(60)

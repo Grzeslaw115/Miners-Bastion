@@ -2,7 +2,7 @@ import pygame as pg
 import math
 
 class Enemy(pg.sprite.Sprite):
-    def __init__(self, path, image, speed):
+    def __init__(self, path, image, speed, health = 100):
         pg.sprite.Sprite.__init__(self)
         self.image = image
         self.rect = self.image.get_rect()
@@ -10,6 +10,8 @@ class Enemy(pg.sprite.Sprite):
         self.current_waypoint_index = 0
         self.rect.center = self.path[self.current_waypoint_index]
         self.speed = speed
+        self.health = health
+        self.max_health = health
 
     def update(self):
         if self.current_waypoint_index < len(self.path):
@@ -27,5 +29,15 @@ class Enemy(pg.sprite.Sprite):
             if distance <= self.speed:
                 self.current_waypoint_index += 1
 
+    def draw_health(self, surface):
+        health_bar_width = self.rect.width
+        health_bar_height = 5
+        health_bar_x = self.rect.x
+        health_bar_y = self.rect.y - health_bar_height
+
+        pg.draw.rect(surface, (255, 0, 0), (health_bar_x, health_bar_y, health_bar_width, health_bar_height))
+        pg.draw.rect(surface, (0, 255, 0), (health_bar_x, health_bar_y, health_bar_width * (self.health / self.max_health), health_bar_height))
+
     def draw(self, surface):
         surface.blit(self.image, self.rect)
+        self.draw_health(surface)

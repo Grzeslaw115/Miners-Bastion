@@ -54,6 +54,24 @@ def create_turret(mouse_pos, turret_image, turret_group, world, level):
                 new_turret = Turret(turret_image, x_coord, y_coord)
                 turret_group.add(new_turret)
 
+class RestartButton():
+    def __init__(self, x, y, text, level):
+        self.x = x
+        self.y = y
+        self.text = text
+        self.level = level
+
+    def draw(self, screen):
+        font = pg.font.Font(None, 74)
+        text = font.render(self.text, True, (255, 255, 255))
+        screen.blit(text, (self.x, self.y))
+
+    def check_click(self, mouse_x, mouse_y):
+        if self.x < mouse_x < self.x + 200 and self.y < mouse_y < self.y + 50:
+            self.action()
+
+    def action(self):
+        load_level(self.level)
 
 def load_level(level):
     # Initialize the game
@@ -132,6 +150,8 @@ def load_level(level):
             enemy.draw(screen)
             if enemy.current_waypoint_index == len(world.waypoints):
                 game_over = True
+            if enemy.health <= 0:
+                enemy_group.remove(enemy)
 
         if turret_button.draw(screen):
             placing_turrets = True
@@ -148,15 +168,22 @@ def load_level(level):
         pg.display.update()
 
     # Game over screen
+
+    restartButton = RestartButton(512, 512, "Restart", level)
+
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 pg.quit()
                 sys.exit()
+            if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
+                mouse_pos = pg.mouse.get_pos()
+                restartButton.check_click(mouse_pos[0], mouse_pos[1])
 
         screen.fill((0, 0, 0))
         font = pg.font.Font(None, 74)
         text = font.render("Game Over", True, (255, 255, 255))
-        screen.blit(text, (512, 512))
+        screen.blit(text, (512, 400))
+        restartButton.draw(screen)
         pg.display.update()
         clock.tick(60)

@@ -12,6 +12,7 @@ class Enemy(pg.sprite.Sprite):
         self.speed = speed
         self.health = health
         self.max_health = health
+        self.money_per_kill = 100
 
     def update(self):
         if self.current_waypoint_index < len(self.path):

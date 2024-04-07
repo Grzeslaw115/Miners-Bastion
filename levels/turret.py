@@ -4,13 +4,16 @@ import math
 
 
 class Turret(pg.sprite.Sprite):
-    def __init__(self, sprite_sheet, tile_x, tile_y):
+    def __init__(self, sprite_sheet, cost, damage, tile_x, tile_y):
         pg.sprite.Sprite.__init__(self)
         self.range = 150
         self.cooldown = 1500
         self.last_shot = pg.time.get_ticks()
         self.selected = False
         self.target = None
+
+        self.cost = cost
+        self.damage = damage
 
         self.tile_x = tile_x
         self.tile_y = tile_y
@@ -80,4 +83,4 @@ class Turret(pg.sprite.Sprite):
             if dist < self.range:
                 self.target = target
                 self.angle = math.degrees(math.atan2(-y_dist, x_dist))
-                target.health -= 25
+                target.health -= self.damage

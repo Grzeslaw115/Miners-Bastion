@@ -1,4 +1,5 @@
 import pygame as pg
+import constants as c
 
 class World():
     def __init__(self, data, map_image):
@@ -6,6 +7,7 @@ class World():
         self.level_data = data
         self.image = map_image
         self.tile_map = []
+        self.money = c.STARTING_MONEY
 
     def process_data(self):
         # Extract waypoints

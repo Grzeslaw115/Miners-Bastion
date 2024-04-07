@@ -53,10 +53,25 @@ def load_level(level):
                     is_space_free = False
                     break
 
-            if is_space_free:
+            if is_space_free and world.money >= 200:
                 new_turret = Turret(turret_sheet, x_coord, y_coord)
                 turret_group.add(new_turret)
+                world.money -= 200
 
+    def select_turret():
+        x_coord, y_coord = mouse_pos[0] // c.TILE_SIZE, mouse_pos[1] // c.TILE_SIZE
+        for turret in turret_group:
+            if turret.tile_x == x_coord and turret.tile_y == y_coord:
+                return turret
+
+    def unselect_turret():
+        for turret in turret_group:
+            turret.selected = False
+
+    def draw_money():
+        text_font = pg.font.SysFont("Consolas", 24, bold = True)
+        txt_img = text_font.render("MONEY: " + str(world.money), True, "black")
+        screen.blit(txt_img, (10, 10))
 
     # Initialize the game
     pg.init()
@@ -67,6 +82,7 @@ def load_level(level):
 
     placing_turrets = False
     game_over = False
+    selected_turret = None
 
     # Animations
     turret_sheet = pg.image.load("graphics/turrets/turret1_animation.png").convert_alpha()
@@ -120,6 +136,10 @@ def load_level(level):
                     if mouse_pos[0] < SCREEN_WIDTH and mouse_pos[1] < SCREEN_HEIGHT:
                         if placing_turrets:
                             create_turret()
+                        else:
+                            unselect_turret()
+                            selected_turret = select_turret()
+
 
         current_time = pg.time.get_ticks()
         # We spawn a new enemy every 5 seconds and increase the speed every 10 seconds
@@ -131,12 +151,17 @@ def load_level(level):
             last_enemy_speed += 0.1
             last_speed_change = current_time
 
-        turret_group.update()
-
+        turret_group.update(enemy_group)
+        if selected_turret:
+            selected_turret.selected = True
 
         # Draw
         world.draw(screen)
-        turret_group.draw(screen)
+        draw_money()
+
+        for turret in turret_group:
+            turret.draw(screen)
+
         for enemy in enemy_group:
             enemy.update()
             enemy.draw(screen)

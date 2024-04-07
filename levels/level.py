@@ -107,7 +107,7 @@ def load_level(level):
     while True:
         if game_over:
             break
-
+        screen.fill("black")
 
 
         for event in pg.event.get():

@@ -12,9 +12,6 @@ settings = load_settings()
 SCREEN_WIDTH = settings['SCREEN_WIDTH']
 SCREEN_HEIGHT = settings['SCREEN_HEIGHT']
 
-
-
-
 class RestartButton():
     def __init__(self, x, y, text, level):
         self.x = x
@@ -105,7 +102,7 @@ def load_level(level):
 
     # Create world
     world = World(world_data, map_image)
-    world.process_data()
+    world.process_data(level)
 
     # Enemies parameters
     last_enemy_spawn = 0

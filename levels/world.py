@@ -9,7 +9,7 @@ class World():
         self.tile_map = []
         self.money = c.STARTING_MONEY
 
-    def process_data(self):
+    def process_data(self, level):
         # Extract waypoints
         for layer in self.level_data["layers"]:
             if layer["name"] == "tilemap":
@@ -19,14 +19,24 @@ class World():
             elif layer["name"] == "waypoints":
                 for obj in layer["objects"]:
                     waypoint_data = obj["polyline"]
-                    self.process_waypoints(waypoint_data)
+                    self.process_waypoints(waypoint_data, level)
 
-    def process_waypoints(self, data):
+    def process_waypoints(self, data, level):
+        # Chryste panie
         for point in data:
-            temp_x = point.get("x")
-            temp_y = point.get("y")
+            if level == "level1":
+                temp_x = point.get("x") + 832
+                temp_y = point.get("y")
+            
+            if level == "level2":
+                temp_x = point.get("x")
+                temp_y = point.get("y") + 192
 
-            self.waypoints.append((temp_x + 832, temp_y)) # UWAGA! reczne przesuniecie punktow dla level1, trzeba to zmienic
+            if level == "level3":
+                temp_x = point.get("x") - 64
+                temp_y = point.get("y") + 960 
+
+            self.waypoints.append((temp_x, temp_y)) 
 
     def draw(self, surface):
         surface.blit(self.image, (0, 0))

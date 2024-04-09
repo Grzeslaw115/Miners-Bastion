@@ -7,7 +7,7 @@ class Button():
         self.rect.topleft = (x, y)
         self.clicked = False
 
-    def draw(self, surface):
+    def is_clicked(self):
         is_clicked = False
         # Mouse position
         pos = pg.mouse.get_pos()
@@ -21,7 +21,8 @@ class Button():
         if pg.mouse.get_pressed()[0] == 0:
             self.clicked = False
 
+        return is_clicked
+
+    def draw(self, surface):
         # Draw
         surface.blit(self.image, self.rect)
-
-        return is_clicked

@@ -180,18 +180,20 @@ def load_level(level):
                 world.money += enemy.money_per_kill
 
         for i, turret_button in enumerate(turret_buttons):
-            if turret_button.draw(screen):
+            turret_button.draw(screen)
+            if turret_button.is_clicked():
                 which_turret_buying = [False for _ in range(len(which_turret_buying))]
                 which_turret_buying[i] = True
                 placing_turrets = True
                 which_turret = i
             if which_turret_buying[i]:
+                cancel_button.draw(screen)
                 cursor_rect = cursors[i].get_rect()
                 cursor_pos = pg.mouse.get_pos()
                 cursor_rect.center = cursor_pos
                 if cursor_pos[0] <= 1024:
                     screen.blit(cursors[i], cursor_rect)
-                if cancel_button.draw(screen):
+                if cancel_button.is_clicked():
                     which_turret_buying = [False for _ in range(len(which_turret_buying))]
                     placing_turrets = False
                     which_turret = None

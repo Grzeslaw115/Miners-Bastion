@@ -116,11 +116,11 @@ def load_level(level):
     turret_group = pg.sprite.Group()
 
     # Create buttons
-    turret1_button = Button(1024, 120, turret_button_image, True)
-    turret2_button = Button(1024, 220, turret2_button_image, True)
-    cancel_button = Button(1024, 924, cancel_button_image, True)
+    turret1_button = Button(1024, 120, turret_button_image)
+    turret2_button = Button(1024, 220, turret2_button_image)
+    cancel_button = Button(1024, 924, cancel_button_image)
 
-    turrets = [turret1_button, turret2_button]
+    turret_buttons = [turret1_button, turret2_button]
     cursors = [cursor_turret, cursor_turret2]
     which_turret_buying = [False, False]
     which_turret = None
@@ -179,7 +179,7 @@ def load_level(level):
                 enemy_group.remove(enemy)
                 world.money += enemy.money_per_kill
 
-        for i, turret_button in enumerate(turrets):
+        for i, turret_button in enumerate(turret_buttons):
             if turret_button.draw(screen):
                 which_turret_buying = [False for _ in range(len(which_turret_buying))]
                 which_turret_buying[i] = True

@@ -2,7 +2,7 @@ import pygame as pg
 import math
 
 class Enemy(pg.sprite.Sprite):
-    def __init__(self, path, image, speed, health = 100):
+    def __init__(self, path, image, speed, health = 100, money_per_kill = 100):
         pg.sprite.Sprite.__init__(self)
         self.image = image
         self.rect = self.image.get_rect()
@@ -12,7 +12,7 @@ class Enemy(pg.sprite.Sprite):
         self.speed = speed
         self.health = health
         self.max_health = health
-        self.money_per_kill = 100
+        self.money_per_kill = money_per_kill
 
     def update(self):
         if self.current_waypoint_index < len(self.path):

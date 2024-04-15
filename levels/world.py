@@ -15,7 +15,6 @@ class World():
             if layer["name"] == "tilemap":
                 self.tile_map = layer["data"]
 
-
             elif layer["name"] == "waypoints":
                 for obj in layer["objects"]:
                     waypoint_data = obj["polyline"]

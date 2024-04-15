@@ -3,6 +3,7 @@ from sys import exit
 from settingsLoader import load_settings, reset_to_default
 from levelSelection import main as levelSelection
 from settingsPanel import main as settingsPanel
+from button import Button
 
 # Initialize Pygame
 pygame.init()
@@ -48,25 +49,9 @@ def set_current_state(state):
     global current_state
     current_state = state
 
-class Button:
-    def __init__(self, graphics, x, y, action):
-        self.graphics = graphics
-        self.x = x
-        self.y = y
-        self.action = action
-    
-    def draw(self):
-        screen.blit(self.graphics, (self.x, self.y))
-
-    def check_click(self, mouse_x, mouse_y):
-        if self.graphics.get_rect(center=(self.x + self.graphics.get_width() / 2, self.y + self.graphics.get_height() / 2)).collidepoint(mouse_x, mouse_y):
-            self.action()
-            if settings['SOUND_EFFECTS']:
-                button_click_sound.play()
-
-startButton = Button(start_img, SCREEN_WIDTH / 2 - start_img.get_width() / 2, 300, lambda: set_current_state('LEVEL_SELECTION'))
-settingsButton = Button(settings_img, SCREEN_WIDTH - settings_img.get_width() - 10, 10, lambda: set_current_state('SETTINGS'))
-exitButton = Button(exit_img, SCREEN_WIDTH / 2 - exit_img.get_width() / 2, 450, lambda: pygame.quit())
+startButton = Button(SCREEN_WIDTH / 2 - start_img.get_width() / 2, 300, start_img, action=lambda: set_current_state('LEVEL_SELECTION'))
+settingsButton = Button(SCREEN_WIDTH - settings_img.get_width() - 10, 10, settings_img, action=lambda: set_current_state('SETTINGS'))
+exitButton = Button(SCREEN_WIDTH / 2 - exit_img.get_width() / 2, 450, exit_img, action=lambda: pygame.quit())
 
 current_state = 'MAIN_MENU'
 
@@ -85,16 +70,15 @@ while True:
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
-                startButton.check_click(mouse_x, mouse_y)
-                settingsButton.check_click(mouse_x, mouse_y)
-                exitButton.check_click(mouse_x, mouse_y)
-
+                startButton.is_clicked()
+                settingsButton.is_clicked()
+                exitButton.is_clicked()
     screen.blit(background, (0, 0))
     screen.blit(text_title, (SCREEN_WIDTH / 2 - text_title.get_width() / 2, background_y))
 
-    startButton.draw()
-    settingsButton.draw()
-    exitButton.draw()
+    startButton.draw(screen)
+    settingsButton.draw(screen)
+    exitButton.draw(screen)
 
     # Title animation
     if moving_up:

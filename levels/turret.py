@@ -100,8 +100,6 @@ class Turret(pg.sprite.Sprite):
             if dist < self.range:
                 self.angle = math.degrees(math.atan2(-y_dist, x_dist))
 
-<<<<<<< HEAD
-=======
     def build_turret(self, surface, enemy_group, turret_group):
         frame_duration = 150  # Duration of each frame in milliseconds (250ms = 1/4 second)
         total_duration = 1200  # Total duration of animation in milliseconds (2 seconds)
@@ -146,8 +144,6 @@ class Turret(pg.sprite.Sprite):
         # Restore the original image after the animation finishes
         self.image = original_image
 
-
->>>>>>> 2b565625638a45cd7d6ce8d23a4e5fa217b289bc
 class UpgradePanel:
     def __init__(self, turret, surface):
         self.turret = turret

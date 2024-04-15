@@ -3,7 +3,7 @@ import pygame as pg
 
 class SlowSpell(Spell):
     def __init__(self, range, duration, cost, cooldown):
-        super().__init__("Slow", cost = 0, range = 100, duration = 10, cooldown = 0)
+        super().__init__("Slow", cost, range, duration, cooldown)
 
     def apply_effect(self, enemy):
         enemy.speed = enemy.speed / 2

@@ -57,7 +57,6 @@ def load_level(level):
                 turret_group.add(new_turret)
                 world.money -= turret_info[which_turret][1]
 
-
     def select_turret():
         x_coord, y_coord = mouse_pos[0] // c.TILE_SIZE, mouse_pos[1] // c.TILE_SIZE
         for turret in turret_group:
@@ -131,9 +130,10 @@ def load_level(level):
     turret_group = pg.sprite.Group()
 
     # Create buttons
-    turret_buttons = {
-    turret1_button := Button(1024, 120, turret_button_image),
-    turret2_button := Button(1024, 220, turret2_button_image) }
+    turret1_button = Button(1024, 120, turret_button_image)
+    turret2_button = Button(1024, 220, turret2_button_image)
+
+    turret_buttons = [turret1_button, turret2_button]
 
     spell_buttons = {
     slowSpell_button := Button(1024, 320, slow_spell_button_image) }
@@ -228,8 +228,16 @@ def load_level(level):
         for spell_button in spell_buttons:
             spell_button.draw(screen)
             if spell_button.is_clicked():
+                which_turret_buying = [False for _ in range(len(which_turret_buying))]
+                placing_turrets = False
+                which_turret = None
+                show_spell_range = False
+
                 show_spell_range = True
-                current_spell = SlowSpell(100, 10, 50, 50)
+                placing_turrets = False
+
+                if spell_button == slowSpell_button: # Slow spell
+                    current_spell = SlowSpell(100, 10, 50, 10)
                 spell_position = pg.mouse.get_pos()
 
         if show_spell_range:

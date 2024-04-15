@@ -51,7 +51,7 @@ def load_level(level):
                     break
 
             if is_space_free and world.money >= turret_info[which_turret][1]:
-                new_turret = Turret(*turret_info[which_turret], x_coord, y_coord)
+                new_turret = Turret(*turret_info[which_turret], x_coord, y_coord, world, screen = screen)
                 turret_group.add(new_turret)
                 world.money -= turret_info[which_turret][1]
 
@@ -63,6 +63,9 @@ def load_level(level):
 
     def unselect_turret():
         for turret in turret_group:
+            if turret.selected:
+                for button in turret.upgrade_panel.buttons:
+                    button.is_clicked()
             turret.selected = False
 
     def draw_money():

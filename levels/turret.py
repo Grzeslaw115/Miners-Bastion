@@ -45,6 +45,7 @@ class Turret(pg.sprite.Sprite):
         return animation_list
 
     def update(self, enemy_group):
+        self.aim(enemy_group)
         if self.target:
             self.play_animation()
         else:
@@ -89,6 +90,15 @@ class Turret(pg.sprite.Sprite):
                 self.target = target
                 self.angle = math.degrees(math.atan2(-y_dist, x_dist))
                 target.health -= self.damage
+
+    def aim(self, enemy_group):
+        for target in enemy_group:
+            x_dist = target.rect.centerx - self.x
+            y_dist = target.rect.centery - self.y
+            dist = math.sqrt(x_dist ** 2 + y_dist ** 2)
+            if dist < self.range:
+                self.angle = math.degrees(math.atan2(-y_dist, x_dist))
+
 
 class UpgradePanel:
     def __init__(self, turret, surface):

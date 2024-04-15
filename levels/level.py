@@ -87,6 +87,7 @@ def load_level(level):
     # Animations
     turret1_sheet = pg.image.load("graphics/turrets/turret1_animation.png").convert_alpha()
     turret2_sheet = pg.image.load("graphics/turrets/turret2_animation.png").convert_alpha()
+    integrate_sheet = pg.image.load("graphics/enemies/animacjaIntegrate1.png").convert_alpha()
 
 
     # Images
@@ -97,7 +98,8 @@ def load_level(level):
     cursor_turret = pg.image.load("graphics/turrets/turret1.png").convert_alpha()
     cursor_turret2 = pg.image.load("graphics/turrets/turret2.png").convert_alpha()
     enemy_image = pg.image.load("graphics/enemies/integrate.png").convert_alpha()
-    enemy_image = pg.transform.scale(enemy_image, (enemy_image.get_width() * 1/8, enemy_image.get_height() * 1/8))
+    enemy_image = pg.transform.scale(enemy_image, (enemy_image.get_width(), enemy_image.get_height()))
+
 
     # Load json data for level
     with open('levels/'+level+'.tmj') as infile:
@@ -111,7 +113,7 @@ def load_level(level):
     last_enemy_spawn = 0
     last_speed_change = 0
     last_enemy_speed = 2
-    first_enemy = Enemy(world.waypoints, enemy_image, last_enemy_speed)
+    first_enemy = Enemy(world.waypoints, enemy_image, last_enemy_speed, integrate_sheet)
 
     # Create groups
     enemy_group = pg.sprite.Group()
@@ -156,7 +158,7 @@ def load_level(level):
         # We spawn a new enemy every 5 seconds and increase the speed every 10 seconds
         if current_time - last_enemy_spawn > 5000:
             last_enemy_spawn = current_time
-            new_enemy = Enemy(world.waypoints, enemy_image, last_enemy_speed)
+            new_enemy = Enemy(world.waypoints, enemy_image, last_enemy_speed, integrate_sheet)
             enemy_group.add(new_enemy)
         if current_time - last_enemy_spawn > 10000:
             last_enemy_speed += 0.1
@@ -178,9 +180,12 @@ def load_level(level):
             enemy.draw(screen)
             if enemy.current_waypoint_index == len(world.waypoints):
                 game_over = True
-            if enemy.health <= 0:
-                enemy_group.remove(enemy)
+            if enemy.health <= 0 and not enemy.isDead:
                 world.money += enemy.money_per_kill
+                enemy.isDead = True
+
+
+
 
         for i, turret_button in enumerate(turret_buttons):
             turret_button.draw(screen)

@@ -4,7 +4,7 @@ import math
 from button import Button
 
 class Turret(pg.sprite.Sprite):
-    def __init__(self, sprite_sheet, cost, damage, tile_x, tile_y, world, screen = None):
+    def __init__(self, sprite_sheet, cost, damage, build_animation_sheet, tile_x, tile_y, world, screen = None):
         pg.sprite.Sprite.__init__(self)
         self.range = 150
         self.cooldown = 1500
@@ -13,6 +13,7 @@ class Turret(pg.sprite.Sprite):
         self.target = None
         self.upgrade_panel = UpgradePanel(self, screen)
         self.world = world
+        self.build_animation_sheet = build_animation_sheet
 
         self.cost = cost
         self.damage = damage
@@ -98,6 +99,50 @@ class Turret(pg.sprite.Sprite):
             dist = math.sqrt(x_dist ** 2 + y_dist ** 2)
             if dist < self.range:
                 self.angle = math.degrees(math.atan2(-y_dist, x_dist))
+
+    def build_turret(self, surface, enemy_group, turret_group):
+        frame_duration = 150  # Duration of each frame in milliseconds (250ms = 1/4 second)
+        total_duration = 1200  # Total duration of animation in milliseconds (2 seconds)
+        num_frames = 8  # Total number of frames in the sprite sheet
+
+        frame_width = self.build_animation_sheet.get_width() // num_frames
+        frame_height = self.build_animation_sheet.get_height()
+
+        frame_index = 0
+        current_time = 0
+
+        # Save the original image and set the current image to the first frame
+        original_image = self.image
+        self.image = self.build_animation_sheet.subsurface(0, 0, frame_width, frame_height)
+
+        clock = pg.time.Clock()
+
+        while current_time < total_duration:
+            current_frame_time = pg.time.get_ticks()
+
+            # Display the current frame at the turret's position
+            self.world.draw(surface)
+            for enemy in enemy_group:
+                enemy.draw(surface)
+            for turret in turret_group:
+                turret.draw(surface)
+            surface.blit(self.image, self.rect)
+
+
+            # Update the display
+            pg.display.flip()
+
+            # Wait for the remaining time of the frame
+            pg.time.delay(frame_duration)
+
+            current_time += pg.time.get_ticks() - current_frame_time
+            frame_index = (frame_index + 1) % num_frames
+
+            # Update the current frame
+            self.image = self.build_animation_sheet.subsurface(frame_index * frame_width, 0, frame_width, frame_height)
+
+        # Restore the original image after the animation finishes
+        self.image = original_image
 
 
 class UpgradePanel:

@@ -7,6 +7,7 @@ from settingsLoader import load_settings
 import constants as c
 from button import Button
 from .enemy import Enemy
+from spells.slow_spell import SlowSpell
 
 settings = load_settings()
 SCREEN_WIDTH = settings['SCREEN_WIDTH']
@@ -84,11 +85,14 @@ def load_level(level):
     game_over = False
     selected_turret = None
 
+    show_spell_range = False
+    current_spell = None
+    spell_position = None
+
     # Animations
     turret1_sheet = pg.image.load("graphics/turrets/turret1_animation.png").convert_alpha()
     turret2_sheet = pg.image.load("graphics/turrets/turret2_animation.png").convert_alpha()
     integrate_sheet = pg.image.load("graphics/enemies/animacjaIntegrate1.png").convert_alpha()
-
 
     # Images
     map_image = pg.image.load("graphics/maps/" + level + ".png").convert_alpha()
@@ -97,9 +101,9 @@ def load_level(level):
     cancel_button_image = pg.image.load("graphics/buttons/cancel_button.png").convert_alpha()
     cursor_turret = pg.image.load("graphics/turrets/turret1.png").convert_alpha()
     cursor_turret2 = pg.image.load("graphics/turrets/turret2.png").convert_alpha()
+    slow_spell_button_image = pg.image.load("graphics/buttons/slowSpell_button.png").convert_alpha()
     enemy_image = pg.image.load("graphics/enemies/integrate.png").convert_alpha()
     enemy_image = pg.transform.scale(enemy_image, (enemy_image.get_width(), enemy_image.get_height()))
-
 
     # Load json data for level
     with open('levels/'+level+'.tmj') as infile:
@@ -121,16 +125,19 @@ def load_level(level):
     turret_group = pg.sprite.Group()
 
     # Create buttons
-    turret1_button = Button(1024, 120, turret_button_image)
-    turret2_button = Button(1024, 220, turret2_button_image)
+    turret_buttons = {
+    turret1_button := Button(1024, 120, turret_button_image),
+    turret2_button := Button(1024, 220, turret2_button_image) }
+
+    spell_buttons = {
+    slowSpell_button := Button(1024, 320, slow_spell_button_image) }
+
     cancel_button = Button(1024, 924, cancel_button_image)
 
-    turret_buttons = [turret1_button, turret2_button]
     cursors = [cursor_turret, cursor_turret2]
     which_turret_buying = [False, False]
     which_turret = None
     turret_info = [(turret1_sheet, 200, 25), (turret2_sheet, 500, 50)]  # Animation sheet, cost, damage
-
 
     while True:
         if game_over:
@@ -147,12 +154,16 @@ def load_level(level):
             if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
                 mouse_pos = pg.mouse.get_pos()
                 if mouse_pos[0] < SCREEN_WIDTH and mouse_pos[1] < SCREEN_HEIGHT:
+                    if show_spell_range and world.money >= current_spell.cost:
+                        current_spell.cast(spell_position[0], spell_position[1], enemy_group, pg.time.get_ticks())
+                        show_spell_range = False
+                        world.money -= current_spell.cost
+
                     if placing_turrets:
                         create_turret()
                     else:
                         unselect_turret()
                         selected_turret = select_turret()
-
 
         current_time = pg.time.get_ticks()
         # We spawn a new enemy every 5 seconds and increase the speed every 10 seconds
@@ -183,9 +194,10 @@ def load_level(level):
             if enemy.health <= 0 and not enemy.isDead:
                 world.money += enemy.money_per_kill
                 enemy.isDead = True
-
-
-
+            if enemy.isSpelled:
+                if current_time - enemy.lastSpelled > 5000:
+                    spelledWith = enemy.spelledWith
+                    spelledWith.restore_effect(enemy)
 
         for i, turret_button in enumerate(turret_buttons):
             turret_button.draw(screen)
@@ -205,7 +217,19 @@ def load_level(level):
                     which_turret_buying = [False for _ in range(len(which_turret_buying))]
                     placing_turrets = False
                     which_turret = None
+                    show_spell_range = False
 
+        for spell_button in spell_buttons:
+            spell_button.draw(screen)
+            if spell_button.is_clicked():
+                show_spell_range = True
+                current_spell = SlowSpell(100, 10, 50, 50)
+                spell_position = pg.mouse.get_pos()
+
+        if show_spell_range:
+            spell_position = pg.mouse.get_pos()
+            current_spell.draw_range(screen, spell_position[0], spell_position[1])
+ 
         clock.tick(60)
         pg.display.update()
 

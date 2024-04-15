@@ -99,7 +99,6 @@ class Turret(pg.sprite.Sprite):
             if dist < self.range:
                 self.angle = math.degrees(math.atan2(-y_dist, x_dist))
 
-
 class UpgradePanel:
     def __init__(self, turret, surface):
         self.turret = turret

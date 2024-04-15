@@ -17,6 +17,7 @@ class Enemy(pg.sprite.Sprite):
         self.isDead = False
         self.current_dead_animation_index = 0
         self.update_flag = False
+        self.isSpelled = False
 
     def update(self):
         if self.current_waypoint_index < len(self.path) and not self.isDead:
@@ -48,9 +49,6 @@ class Enemy(pg.sprite.Sprite):
                 frame_rect = pg.Rect(self.current_dead_animation_index * frame_width, 0, frame_width, frame_height)
                 self.image = self.sprite_sheet.subsurface(frame_rect)
 
-
-
-
     def draw_health(self, surface):
         health_bar_width = self.rect.width
         health_bar_height = 5
@@ -64,4 +62,9 @@ class Enemy(pg.sprite.Sprite):
         surface.blit(self.image, self.rect)
         self.draw_health(surface)
 
-
+    def spell(self, spell):
+        self.isSpelled = True
+        self.lastSpelled = pg.time.get_ticks()
+        spell.apply_effect(self)
+        self.duration = spell.duration
+        self.spelledWith = spell

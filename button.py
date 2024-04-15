@@ -28,6 +28,7 @@ class Button():
                 self.clicked = True
                 if self.action:
                     self.action()
+                    self.clicked = False
                 if settings['SOUND_EFFECTS']:
                     pg.mixer.Sound('assets/audio/menu/button_click.mp3').play()
 

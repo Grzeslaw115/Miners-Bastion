@@ -53,8 +53,10 @@ def load_level(level):
 
             if is_space_free and world.money >= turret_info[which_turret][1]:
                 new_turret = Turret(*turret_info[which_turret], x_coord, y_coord, world, screen = screen)
+                new_turret.build_turret(screen, enemy_group, turret_group)
                 turret_group.add(new_turret)
                 world.money -= turret_info[which_turret][1]
+
 
     def select_turret():
         x_coord, y_coord = mouse_pos[0] // c.TILE_SIZE, mouse_pos[1] // c.TILE_SIZE
@@ -93,6 +95,10 @@ def load_level(level):
     turret1_sheet = pg.image.load("graphics/turrets/turret1_animation.png").convert_alpha()
     turret2_sheet = pg.image.load("graphics/turrets/turret2_animation.png").convert_alpha()
     integrate_sheet = pg.image.load("graphics/enemies/animacjaIntegrate1.png").convert_alpha()
+    build_turret1_animation_sheet = pg.image.load("graphics/turrets/build_turret1_animation.png").convert_alpha()
+    build_turret2_animation_sheet = pg.image.load("graphics/turrets/build_turret2_animation.png").convert_alpha()
+
+
 
     # Images
     map_image = pg.image.load("graphics/maps/" + level + ".png").convert_alpha()
@@ -137,7 +143,7 @@ def load_level(level):
     cursors = [cursor_turret, cursor_turret2]
     which_turret_buying = [False, False]
     which_turret = None
-    turret_info = [(turret1_sheet, 200, 25), (turret2_sheet, 500, 50)]  # Animation sheet, cost, damage
+    turret_info = [(turret1_sheet, 200, 25, build_turret1_animation_sheet), (turret2_sheet, 500, 50, build_turret2_animation_sheet)]  # Animation sheet, cost, damage, build animation
 
     while True:
         if game_over:

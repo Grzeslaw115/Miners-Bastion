@@ -13,25 +13,6 @@ settings = load_settings()
 SCREEN_WIDTH = settings['SCREEN_WIDTH']
 SCREEN_HEIGHT = settings['SCREEN_HEIGHT']
 
-class RestartButton():
-    def __init__(self, x, y, text, level):
-        self.x = x
-        self.y = y
-        self.text = text
-        self.level = level
-
-    def draw(self, screen):
-        font = pg.font.Font(None, 74)
-        text = font.render(self.text, True, (255, 255, 255))
-        screen.blit(text, (self.x, self.y))
-
-    def check_click(self, mouse_x, mouse_y):
-        if self.x < mouse_x < self.x + 200 and self.y < mouse_y < self.y + 50:
-            self.action()
-
-    def action(self):
-        load_level(self.level)
-
 def load_level(level):
 
     def create_turret():
@@ -97,8 +78,6 @@ def load_level(level):
     build_turret1_animation_sheet = pg.image.load("graphics/turrets/build_turret1_animation.png").convert_alpha()
     build_turret2_animation_sheet = pg.image.load("graphics/turrets/build_turret2_animation.png").convert_alpha()
 
-
-
     # Images
     map_image = pg.image.load("graphics/maps/" + level + ".png").convert_alpha()
     turret_button_image = pg.image.load("graphics/buttons/turret1_button.png").convert_alpha()
@@ -145,6 +124,10 @@ def load_level(level):
     which_turret = None
     turret_info = [(turret1_sheet, 200, 25, build_turret1_animation_sheet), (turret2_sheet, 500, 50, build_turret2_animation_sheet)]  # Animation sheet, cost, damage, build animation
 
+    # Create spells
+    slow_spell = SlowSpell(100, 10, 50, 5)
+    
+
     while True:
         if game_over:
             break
@@ -160,6 +143,7 @@ def load_level(level):
             if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
                 mouse_pos = pg.mouse.get_pos()
                 if mouse_pos[0] < SCREEN_WIDTH and mouse_pos[1] < SCREEN_HEIGHT:
+                    # Spell casting
                     if show_spell_range and world.money >= current_spell.cost:
                         current_spell.cast(spell_position[0], spell_position[1], enemy_group, pg.time.get_ticks())
                         show_spell_range = False
@@ -236,20 +220,28 @@ def load_level(level):
                 show_spell_range = True
                 placing_turrets = False
 
-                if spell_button == slowSpell_button: # Slow spell
-                    current_spell = SlowSpell(100, 10, 50, 10)
+                if spell_button == slowSpell_button:  # Slow spell
+                    if slow_spell.can_cast():  # Sprawdzenie możliwości rzucenia zaklęcia
+                        current_spell = slow_spell
+                        show_spell_range = True
+                    else:
+                        show_spell_range = False
+                        current_spell = None
                 spell_position = pg.mouse.get_pos()
 
         if show_spell_range:
             spell_position = pg.mouse.get_pos()
             current_spell.draw_range(screen, spell_position[0], spell_position[1])
  
+        # Drawing cooldowns
+        slow_spell.draw_cooldown(screen, 1224, 370)
+
         clock.tick(60)
         pg.display.update()
 
     # Game over screen
 
-    restartButton = RestartButton(512, 512, "Restart", level)
+    restartButton = Button(SCREEN_WIDTH / 2 - 100, 500, None, "Restart", action=lambda: load_level(level))
 
     while True:
         for event in pg.event.get():
@@ -258,7 +250,7 @@ def load_level(level):
                 sys.exit()
             if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
                 mouse_pos = pg.mouse.get_pos()
-                restartButton.check_click(mouse_pos[0], mouse_pos[1])
+                restartButton.is_clicked()
 
         screen.fill((0, 0, 0))
         font = pg.font.Font(None, 74)

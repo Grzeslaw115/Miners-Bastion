@@ -46,6 +46,7 @@ moving_up = True
 def back_to_main_menu():
     global current_state
     current_state = 'MAIN_MENU'
+    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 def set_current_state(state):
     global current_state

@@ -16,11 +16,12 @@ pygame.display.set_caption("Hall of Fame")
 # Load fonts
 font = pygame.font.Font(None, 36)
 
+button_click_sound = pygame.mixer.Sound("assets/audio/menu/button_click.mp3")
+
 back_to_menu_img = pygame.image.load("graphics/menu/backToMenuButton.png").convert_alpha()
 
 def main(callback):
     screen = pygame.display.set_mode((1024, 1024))
-
 
     # Load and parse scores
     try:
@@ -53,6 +54,7 @@ def main(callback):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     if back_button.rect.collidepoint(event.pos):
+                        button_click_sound.play()
                         callback()
                         return
 

@@ -14,14 +14,11 @@ settings = load_settings()
 SCREEN_WIDTH = settings['SCREEN_WIDTH']
 SCREEN_HEIGHT = settings['SCREEN_HEIGHT']
 
-def load_level(level):
+def load_level(level, callback):
 
     def create_turret():
         x_coord, y_coord = mouse_pos[0] // c.TILE_SIZE, mouse_pos[1] // c.TILE_SIZE
-        turret_places = {}
-        turret_places["level1"] = [95, 148, 145, 7, 10]
-        turret_places["level2"] = [115, 165, 168, 30, 27]
-        turret_places["level3"] = [667, 579, 582, 717, 720]
+        turret_places = c.turret_places
 
         mouse_tile_num = (y_coord * c.COLUMNS) + x_coord
 
@@ -56,8 +53,8 @@ def load_level(level):
         text_font = pg.font.SysFont("Consolas", 30, bold = True)
         txt_points = text_font.render("POINTS: " + str(world.points), True, "black")
         txt_money = text_font.render("MONEY: " + str(world.money), True, "black")
-        screen.blit(txt_points, (1060, 35))
-        screen.blit(txt_money, (1060, 65))
+        screen.blit(txt_points, (1040, 35))
+        screen.blit(txt_money, (1040, 65))
 
     # Initialize the game
     pg.init()
@@ -91,6 +88,7 @@ def load_level(level):
     slow_spell_button_image = pg.image.load("graphics/buttons/slowSpell_button.png").convert_alpha()
     enemy_image = pg.image.load("graphics/enemies/integrate.png").convert_alpha()
     enemy_image = pg.transform.scale(enemy_image, (enemy_image.get_width(), enemy_image.get_height()))
+    back_to_menu_img = pg.image.load("graphics/menu/backToMenuButton.png").convert_alpha()
 
     # Load json data for level
     with open('levels/'+level+'.tmj') as infile:
@@ -114,6 +112,7 @@ def load_level(level):
     # Create buttons
     turret1_button = Button(1024, 120, turret_button_image)
     turret2_button = Button(1024, 220, turret2_button_image)
+    back_button = Button(1240, 25, back_to_menu_img)
 
     turret_buttons = [turret1_button, turret2_button]
 
@@ -129,7 +128,6 @@ def load_level(level):
 
     # Create spells
     slow_spell = SlowSpell(100, 10, 50, 5)
-    
 
     while True:
         if game_over:
@@ -145,6 +143,12 @@ def load_level(level):
 
             if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
                 mouse_pos = pg.mouse.get_pos()
+
+                if back_button.rect.collidepoint(event.pos):
+                    save_score(world.points)
+                    callback()
+                    return
+
                 if mouse_pos[0] < SCREEN_WIDTH and mouse_pos[1] < SCREEN_HEIGHT:
                     # Spell casting
                     if show_spell_range and world.money >= current_spell.cost:
@@ -175,6 +179,7 @@ def load_level(level):
         # Draw
         world.draw(screen)
         draw_money_and_points()
+        back_button.draw(screen)
 
         for turret in turret_group:
             turret.draw(screen)

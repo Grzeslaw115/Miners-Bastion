@@ -8,6 +8,7 @@ class World():
         self.image = map_image
         self.tile_map = []
         self.money = c.STARTING_MONEY
+        self.points = 0
 
     def process_data(self, level):
         # Extract waypoints

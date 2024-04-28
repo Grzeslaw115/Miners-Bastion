@@ -1,5 +1,6 @@
 import pygame as pg
 import math
+import os
 
 class Enemy(pg.sprite.Sprite):
     def __init__(self, path, image, speed, sprite_sheet, health = 100, money_per_kill = 100):
@@ -18,6 +19,7 @@ class Enemy(pg.sprite.Sprite):
         self.current_dead_animation_index = 0
         self.update_flag = False
         self.isSpelled = False
+        self.points_per_kill = self.calculate_points_per_kill()
 
     def update(self):
         if self.current_waypoint_index < len(self.path) and not self.isDead:
@@ -68,3 +70,9 @@ class Enemy(pg.sprite.Sprite):
         spell.apply_effect(self)
         self.duration = spell.duration
         self.spelledWith = spell
+
+    # Based on money_per_kill parameter we know which enemy we killed
+    # there is no need to pass another unnecessary argument
+    def calculate_points_per_kill(self):
+        if self.money_per_kill == 100:
+            return 50

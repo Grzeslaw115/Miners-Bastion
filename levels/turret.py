@@ -89,8 +89,8 @@ class Turret(pg.sprite.Sprite):
             dist = math.sqrt(x_dist ** 2 + y_dist ** 2)
             if dist < self.range:
                 self.target = target
-                self.angle = math.degrees(math.atan2(-y_dist, x_dist))
                 target.health -= self.damage
+                break
 
     def aim(self, enemy_group):
         for target in enemy_group:
@@ -99,6 +99,7 @@ class Turret(pg.sprite.Sprite):
             dist = math.sqrt(x_dist ** 2 + y_dist ** 2)
             if dist < self.range:
                 self.angle = math.degrees(math.atan2(-y_dist, x_dist))
+                break
 
     def build_turret(self, surface, enemy_group, turret_group):
         frame_duration = 150  # Duration of each frame in milliseconds (250ms = 1/4 second)

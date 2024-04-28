@@ -4,6 +4,7 @@ from settingsLoader import load_settings, reset_to_default
 from levelSelection import main as levelSelection
 from settingsPanel import main as settingsPanel
 from button import Button
+from HallOfFame import main as hallOfFame
 
 # Initialize Pygame
 pygame.init()
@@ -33,6 +34,7 @@ exit_img = pygame.image.load("graphics/menu/exit.png").convert_alpha()
 start_img = pygame.transform.scale(start_img, (start_img.get_width() * 1/5, start_img.get_height() * 1/5))
 settings_img = pygame.transform.scale(settings_img, (settings_img.get_width() * 1/5, settings_img.get_height() * 1/5))
 exit_img = pygame.transform.scale(exit_img, (exit_img.get_width() * 1/6, exit_img.get_height() * 1/6))
+hall_of_fame_img = pygame.image.load("graphics/menu/hallOfFameButton.png").convert_alpha()
 
 # Render text
 text_title = title_font.render("Miners' Bastion", True, 'yellow')
@@ -51,6 +53,7 @@ def set_current_state(state):
 
 startButton = Button(SCREEN_WIDTH / 2 - start_img.get_width() / 2, 300, start_img, action=lambda: set_current_state('LEVEL_SELECTION'))
 settingsButton = Button(SCREEN_WIDTH - settings_img.get_width() - 10, 10, settings_img, action=lambda: set_current_state('SETTINGS'))
+hall_of_fame_button = Button(SCREEN_WIDTH / 2 - hall_of_fame_img.get_width() / 2, 700, hall_of_fame_img, action=lambda: set_current_state('HALL_OF_FAME'))
 exitButton = Button(SCREEN_WIDTH / 2 - exit_img.get_width() / 2, 450, exit_img, action=lambda: pygame.quit())
 
 current_state = 'MAIN_MENU'
@@ -72,12 +75,14 @@ while True:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 startButton.is_clicked()
                 settingsButton.is_clicked()
+                hall_of_fame_button.is_clicked()
                 exitButton.is_clicked()
     screen.blit(background, (0, 0))
     screen.blit(text_title, (SCREEN_WIDTH / 2 - text_title.get_width() / 2, background_y))
 
     startButton.draw(screen)
     settingsButton.draw(screen)
+    hall_of_fame_button.draw(screen)
     exitButton.draw(screen)
 
     # Title animation
@@ -102,5 +107,9 @@ while True:
     if current_state == 'MAIN_MENU':
         if not pygame.mixer.music.get_busy():
             pygame.mixer.music.play(-1)
+
+    if current_state == 'HALL_OF_FAME':
+        hallOfFame(back_to_main_menu)
+
 
 main()

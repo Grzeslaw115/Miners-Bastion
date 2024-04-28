@@ -8,6 +8,7 @@ import constants as c
 from button import Button
 from .enemy import Enemy
 from spells.slow_spell import SlowSpell
+from PointsLoader import save_score
 
 settings = load_settings()
 SCREEN_WIDTH = settings['SCREEN_WIDTH']
@@ -51,10 +52,12 @@ def load_level(level):
                     button.is_clicked()
             turret.selected = False
 
-    def draw_money():
+    def draw_money_and_points():
         text_font = pg.font.SysFont("Consolas", 30, bold = True)
-        txt_img = text_font.render("MONEY: " + str(world.money), True, "black")
-        screen.blit(txt_img, (1060, 45))
+        txt_points = text_font.render("POINTS: " + str(world.points), True, "black")
+        txt_money = text_font.render("MONEY: " + str(world.money), True, "black")
+        screen.blit(txt_points, (1060, 35))
+        screen.blit(txt_money, (1060, 65))
 
     # Initialize the game
     pg.init()
@@ -171,7 +174,7 @@ def load_level(level):
 
         # Draw
         world.draw(screen)
-        draw_money()
+        draw_money_and_points()
 
         for turret in turret_group:
             turret.draw(screen)
@@ -183,6 +186,7 @@ def load_level(level):
                 game_over = True
             if enemy.health <= 0 and not enemy.isDead:
                 world.money += enemy.money_per_kill
+                world.points += enemy.points_per_kill
                 enemy.isDead = True
             if enemy.isSpelled:
                 if current_time - enemy.lastSpelled > 5000:
@@ -242,6 +246,8 @@ def load_level(level):
     # Game over screen
 
     restartButton = Button(SCREEN_WIDTH / 2 - 100, 500, None, "Restart", action=lambda: load_level(level))
+
+    save_score(world.points)
 
     while True:
         for event in pg.event.get():

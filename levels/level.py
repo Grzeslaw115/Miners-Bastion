@@ -8,6 +8,7 @@ import constants as c
 from button import Button
 from .enemy import Enemy
 from spells.slow_spell import SlowSpell
+from spells.damageSpell import DamageSpell
 from PointsLoader import save_score
 
 settings = load_settings()
@@ -86,6 +87,7 @@ def load_level(level, callback):
     cursor_turret = pg.image.load("graphics/turrets/turret1.png").convert_alpha()
     cursor_turret2 = pg.image.load("graphics/turrets/turret2.png").convert_alpha()
     slow_spell_button_image = pg.image.load("graphics/buttons/slowSpell_button.png").convert_alpha()
+    damage_spell_button_image = pg.image.load("graphics/buttons/damageSpell_button.png").convert_alpha()
     enemy_image = pg.image.load("graphics/enemies/integrate.png").convert_alpha()
     enemy_image = pg.transform.scale(enemy_image, (enemy_image.get_width(), enemy_image.get_height()))
     back_to_menu_img = pg.image.load("graphics/menu/backToMenuButton.png").convert_alpha()
@@ -117,7 +119,8 @@ def load_level(level, callback):
     turret_buttons = [turret1_button, turret2_button]
 
     spell_buttons = {
-    slowSpell_button := Button(1024, 320, slow_spell_button_image) }
+    slowSpell_button := Button(1024, 320, slow_spell_button_image),
+    damageSpell_button := Button(1024, 420, damage_spell_button_image)}
 
     cancel_button = Button(1024, 924, cancel_button_image)
 
@@ -127,7 +130,8 @@ def load_level(level, callback):
     turret_info = [(turret1_sheet, 200, 25, build_turret1_animation_sheet), (turret2_sheet, 500, 50, build_turret2_animation_sheet)]  # Animation sheet, cost, damage, build animation
 
     # Create spells
-    slow_spell = SlowSpell(100, 10, 50, 5)
+    slow_spell = SlowSpell(100, 5, 50, 5)
+    damage_spell = DamageSpell(150, 5, 50, 5)
 
     while True:
         if game_over:
@@ -193,10 +197,9 @@ def load_level(level, callback):
                 world.money += enemy.money_per_kill
                 world.points += enemy.points_per_kill
                 enemy.isDead = True
-            if enemy.isSpelled:
-                if current_time - enemy.lastSpelled > 5000:
-                    spelledWith = enemy.spelledWith
-                    spelledWith.restore_effect(enemy)
+            for spell in list(enemy.spelledWith):
+                if current_time - enemy.spelledWith[spell] >= spell.duration * 1000:
+                    spell.restore_effect(enemy)
 
         for i, turret_button in enumerate(turret_buttons):
             turret_button.draw(screen)
@@ -224,26 +227,25 @@ def load_level(level, callback):
                 which_turret_buying = [False for _ in range(len(which_turret_buying))]
                 placing_turrets = False
                 which_turret = None
-                show_spell_range = False
-
-                show_spell_range = True
                 placing_turrets = False
 
                 if spell_button == slowSpell_button:  # Slow spell
-                    if slow_spell.can_cast():  # Sprawdzenie możliwości rzucenia zaklęcia
-                        current_spell = slow_spell
-                        show_spell_range = True
-                    else:
-                        show_spell_range = False
-                        current_spell = None
+                    current_spell = slow_spell
+                elif spell_button == damageSpell_button:  # Damage spell
+                    current_spell = damage_spell
+
+                if current_spell.can_cast() and world.money >= current_spell.cost:
+                    show_spell_range = True
                 spell_position = pg.mouse.get_pos()
 
         if show_spell_range:
             spell_position = pg.mouse.get_pos()
             current_spell.draw_range(screen, spell_position[0], spell_position[1])
+            current_spell.draw_description(screen, pg.font.SysFont("Consolas", 20), 0, 0)
  
         # Drawing cooldowns
         slow_spell.draw_cooldown(screen, 1224, 370)
+        damage_spell.draw_cooldown(screen, 1224, 470)
 
         clock.tick(60)
         pg.display.update()

@@ -10,6 +10,7 @@ class Spell():
         self.duration = duration
         self.cooldown = cooldown * 1000
         self.last_cast = pg.time.get_ticks()
+        self.description = ""
 
     def can_cast(self):
         return (pg.time.get_ticks() - self.last_cast) >= self.cooldown
@@ -17,7 +18,7 @@ class Spell():
     def cast(self, x, y, enemies, current_time):
         self.last_cast = current_time
         for enemy in enemies:
-            if self.is_in_range(x, y, enemy) and not enemy.isSpelled:
+            if self.is_in_range(x, y, enemy):
                 enemy.spell(self)
 
     def draw_cooldown(self, screen, x, y):
@@ -41,3 +42,7 @@ class Spell():
 
     def is_in_range(self, x, y, enemy):
         return ( (x - enemy.rect.center[0]) ** 2 + (y - enemy.rect.center[1]) ** 2 ) ** 0.5 <= self.range
+
+    def draw_description(self, screen, font, x, y):
+        text = font.render(self.description, True, (0, 0, 0))
+        screen.blit(text, (x, y))

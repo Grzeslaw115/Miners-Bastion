@@ -23,6 +23,10 @@ back_to_menu_img = pygame.image.load("graphics/menu/backToMenuButton.png").conve
 def main(callback):
     screen = pygame.display.set_mode((1024, 1024))
 
+    #Play hall of fame music
+    if settings['SOUND_EFFECTS']:
+        pygame.mixer.Sound("assets/audio/hallOfFame/hall_of_fame.mp3").play()
+
     # Load and parse scores
     try:
         with open("scoreHistory.json", "r") as infile:

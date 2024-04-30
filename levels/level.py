@@ -7,9 +7,10 @@ from settingsLoader import load_settings
 import constants as c
 from button import Button
 from .enemy import Enemy
-from spells.slow_spell import SlowSpell
+from spells.slowSpell import SlowSpell
 from spells.damageSpell import DamageSpell
 from PointsLoader import save_score
+import random
 
 settings = load_settings()
 SCREEN_WIDTH = settings['SCREEN_WIDTH']
@@ -32,7 +33,7 @@ def load_level(level, callback):
                     break
 
             if is_space_free and world.money >= turret_info[which_turret][1]:
-                new_turret = Turret(*turret_info[which_turret], x_coord, y_coord, world, screen = screen)
+                new_turret = Turret(*turret_info[which_turret], x_coord, y_coord, world, screen = screen, play_sound = settings['SOUND_EFFECTS'])
                 new_turret.build_turret(screen, enemy_group, turret_group)
                 turret_group.add(new_turret)
                 world.money -= turret_info[which_turret][1]
@@ -57,6 +58,20 @@ def load_level(level, callback):
         screen.blit(txt_points, (1040, 35))
         screen.blit(txt_money, (1040, 65))
 
+    def spawn_enemies(current_time, last_enemy_spawn, enemy_group, world, how_many_spawned):
+        if current_time - last_enemy_spawn > 5000: # Spawn enemy every 5 seconds
+            how_many_spawned += 1 # Increase the number of spawned enemies, to increase the speed of the next one
+            enemy_random = random.randint(0, 1) # Randomize enemy type
+            
+            if enemy_random == 0: # Integrate enemy
+                new_enemy = Enemy(world.waypoints, integrate_image, speed=2 + how_many_spawned * 0.1, sprite_sheet=integrate_sheet)
+            else: # Haskell enemy
+                new_enemy = Enemy(world.waypoints, haskell_image, speed=4, sprite_sheet=haskell_sheet, health=30 + how_many_spawned * 0.15, money_per_kill=50)
+            enemy_group.add(new_enemy)
+            last_enemy_spawn = current_time
+
+        return last_enemy_spawn, how_many_spawned
+
     # Initialize the game
     pg.init()
     clock = pg.time.Clock()
@@ -76,6 +91,7 @@ def load_level(level, callback):
     turret1_sheet = pg.image.load("graphics/turrets/turret1_animation.png").convert_alpha()
     turret2_sheet = pg.image.load("graphics/turrets/turret2_animation.png").convert_alpha()
     integrate_sheet = pg.image.load("graphics/enemies/animacjaIntegrate1.png").convert_alpha()
+    haskell_sheet = pg.image.load("graphics/enemies/animacjaHaskell1.png").convert_alpha()
     build_turret1_animation_sheet = pg.image.load("graphics/turrets/build_turret1_animation.png").convert_alpha()
     build_turret2_animation_sheet = pg.image.load("graphics/turrets/build_turret2_animation.png").convert_alpha()
 
@@ -88,8 +104,10 @@ def load_level(level, callback):
     cursor_turret2 = pg.image.load("graphics/turrets/turret2.png").convert_alpha()
     slow_spell_button_image = pg.image.load("graphics/buttons/slowSpell_button.png").convert_alpha()
     damage_spell_button_image = pg.image.load("graphics/buttons/damageSpell_button.png").convert_alpha()
-    enemy_image = pg.image.load("graphics/enemies/integrate.png").convert_alpha()
-    enemy_image = pg.transform.scale(enemy_image, (enemy_image.get_width(), enemy_image.get_height()))
+    integrate_image = pg.image.load("graphics/enemies/integrate.png").convert_alpha()
+    integrate_image = pg.transform.scale(integrate_image, (integrate_image.get_width(), integrate_image.get_height()))
+    haskell_image = pg.image.load("graphics/enemies/haskell.png").convert_alpha()
+    haskell_image = pg.transform.scale(haskell_image, (haskell_image.get_width(), haskell_image.get_height()))
     back_to_menu_img = pg.image.load("graphics/menu/backToMenuButton.png").convert_alpha()
 
     # Load json data for level
@@ -102,13 +120,10 @@ def load_level(level, callback):
 
     # Enemies parameters
     last_enemy_spawn = 0
-    last_speed_change = 0
-    last_enemy_speed = 2
-    first_enemy = Enemy(world.waypoints, enemy_image, last_enemy_speed, integrate_sheet)
+    how_many_spawned = 0
 
     # Create groups
     enemy_group = pg.sprite.Group()
-    enemy_group.add(first_enemy)
     turret_group = pg.sprite.Group()
 
     # Create buttons
@@ -168,13 +183,7 @@ def load_level(level, callback):
 
         current_time = pg.time.get_ticks()
         # We spawn a new enemy every 5 seconds and increase the speed every 10 seconds
-        if current_time - last_enemy_spawn > 5000:
-            last_enemy_spawn = current_time
-            new_enemy = Enemy(world.waypoints, enemy_image, last_enemy_speed, integrate_sheet)
-            enemy_group.add(new_enemy)
-        if current_time - last_enemy_spawn > 10000:
-            last_enemy_speed += 0.1
-            last_speed_change = current_time
+        last_enemy_spawn, how_many_spawned = spawn_enemies(current_time, last_enemy_spawn, enemy_group, world, how_many_spawned)
 
         turret_group.update(enemy_group)
         if selected_turret:

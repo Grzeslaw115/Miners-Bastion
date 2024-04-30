@@ -112,5 +112,4 @@ while True:
     if current_state == 'HALL_OF_FAME':
         hallOfFame(back_to_main_menu)
 
-
 main()

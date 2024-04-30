@@ -18,7 +18,7 @@ class Enemy(pg.sprite.Sprite):
         self.isDead = False
         self.current_dead_animation_index = 0
         self.update_flag = False
-        self.isSpelled = False
+        self.spelledWith = dict() # {spell: last_cast_time}
         self.points_per_kill = self.calculate_points_per_kill()
 
     def update(self):
@@ -65,14 +65,10 @@ class Enemy(pg.sprite.Sprite):
         self.draw_health(surface)
 
     def spell(self, spell):
-        self.isSpelled = True
-        self.lastSpelled = pg.time.get_ticks()
-        spell.apply_effect(self)
-        self.duration = spell.duration
-        self.spelledWith = spell
+        if spell not in self.spelledWith:
+            spell.apply_effect(self)
+        self.spelledWith[spell] = pg.time.get_ticks()
 
-    # Based on money_per_kill parameter we know which enemy we killed
-    # there is no need to pass another unnecessary argument
     def calculate_points_per_kill(self):
         if self.money_per_kill == 100:
             return 50

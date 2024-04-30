@@ -4,7 +4,7 @@ import math
 from button import Button
 
 class Turret(pg.sprite.Sprite):
-    def __init__(self, sprite_sheet, cost, damage, build_animation_sheet, tile_x, tile_y, world, screen = None):
+    def __init__(self, sprite_sheet, cost, damage, build_animation_sheet, tile_x, tile_y, world, screen = None, play_sound = True):
         pg.sprite.Sprite.__init__(self)
         self.range = 150
         self.cooldown = 1500
@@ -14,6 +14,9 @@ class Turret(pg.sprite.Sprite):
         self.upgrade_panel = UpgradePanel(self, screen)
         self.world = world
         self.build_animation_sheet = build_animation_sheet
+        self.shoot_sound = pg.mixer.Sound("assets/audio/turrets/turret_shot.mp3")
+        self.shoot_sound.set_volume(0.1)
+        self.play_sound = play_sound
 
         self.cost = cost
         self.damage = damage
@@ -90,6 +93,8 @@ class Turret(pg.sprite.Sprite):
             if dist < self.range:
                 self.target = target
                 target.health -= self.damage
+                if self.play_sound:
+                    self.shoot_sound.play()
                 break
 
     def aim(self, enemy_group):

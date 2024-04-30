@@ -69,6 +69,7 @@ class Enemy(pg.sprite.Sprite):
             spell.apply_effect(self)
         self.spelledWith[spell] = pg.time.get_ticks()
 
-    def calculate_points_per_kill(self):
+    def calculate_points_per_kill(self): # ????
         if self.money_per_kill == 100:
             return 50
+        return 20

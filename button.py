@@ -4,7 +4,7 @@ from settingsLoader import load_settings
 settings = load_settings()
 
 class Button():
-    def __init__(self, x, y, image, text=None, action=None, show_rect = False):
+    def __init__(self, x, y, image, text=None, action=None, show_rect = False, font_size=30):
         self.image = image
         if self.image:
             self.rect = self.image.get_rect()
@@ -15,6 +15,7 @@ class Button():
         self.text = text
         self.action = action
         self.show_rect = show_rect
+        self.font_size = font_size
 
     def is_clicked(self):
         is_clicked = False
@@ -42,7 +43,7 @@ class Button():
         if self.image:
             surface.blit(self.image, self.rect)
         if self.text:
-            font = pg.font.Font(None, 30)
+            font = pg.font.Font(None, self.font_size)
             text = font.render(self.text, True, (255, 255, 255))
             text_rect = text.get_rect(center=self.rect.center)
             surface.blit(text, text_rect)

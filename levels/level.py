@@ -231,7 +231,6 @@ def load_level(level, callback):
                     which_turret_buying = [False for _ in range(len(which_turret_buying))]
                     placing_turrets = False
                     which_turret = None
-                    show_spell_range = False
 
         for spell_button in spell_buttons:
             spell_button.draw(screen)
@@ -254,6 +253,10 @@ def load_level(level, callback):
             spell_position = pg.mouse.get_pos()
             current_spell.draw_range(screen, spell_position[0], spell_position[1])
             current_spell.draw_description(screen, pg.font.SysFont("Consolas", 20), 0, 0)
+            cancel_button.draw(screen)
+            if cancel_button.is_clicked():
+                show_spell_range = False
+                current_spell = None
  
         # Drawing cooldowns
         slow_spell.draw_cooldown(screen, 1224, 370)

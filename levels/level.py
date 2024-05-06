@@ -130,6 +130,7 @@ def load_level(level, callback):
     turret1_button = Button(1024, 120, turret_button_image)
     turret2_button = Button(1024, 220, turret2_button_image)
     back_button = Button(1240, 25, back_to_menu_img)
+    restartButton = Button(SCREEN_WIDTH / 2, 500, None, "Retake a year", action=lambda: load_level(level, callback), font_size=60)
 
     turret_buttons = [turret1_button, turret2_button]
 
@@ -212,7 +213,7 @@ def load_level(level, callback):
 
         for i, turret_button in enumerate(turret_buttons):
             turret_button.draw(screen)
-            if turret_button.is_clicked():
+            if turret_button.is_clicked() and not show_spell_range:
                 which_turret_buying = [False for _ in range(len(which_turret_buying))]
                 which_turret_buying[i] = True
                 placing_turrets = True
@@ -260,9 +261,7 @@ def load_level(level, callback):
         pg.display.update()
 
     # Game over screen
-
-    restartButton = Button(SCREEN_WIDTH / 2 - 100, 500, None, "Restart", action=lambda: load_level(level))
-
+    #restartButton = Button(SCREEN_WIDTH / 2, 500, None, "Retake a year", action=lambda: load_level(level, callback), font_size=60)
     save_score(world.points)
 
     while True:
@@ -272,12 +271,11 @@ def load_level(level, callback):
                 sys.exit()
             if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
                 mouse_pos = pg.mouse.get_pos()
-                restartButton.is_clicked()
+                if restartButton.rect.collidepoint(mouse_pos):
+                    load_level(level, callback)
+                    return
 
         screen.fill((0, 0, 0))
-        font = pg.font.Font(None, 74)
-        text = font.render("Game Over", True, (255, 255, 255))
-        screen.blit(text, (512, 400))
         restartButton.draw(screen)
         pg.display.update()
         clock.tick(60)

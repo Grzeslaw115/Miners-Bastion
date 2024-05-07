@@ -37,7 +37,8 @@ def load_level(level, callback):
                 new_turret.build_turret(screen, enemy_group, turret_group)
                 turret_group.add(new_turret)
                 world.money -= turret_info[which_turret][1]
-
+                placing_turrets = False
+                
     def select_turret():
         x_coord, y_coord = mouse_pos[0] // c.TILE_SIZE, mouse_pos[1] // c.TILE_SIZE
         for turret in turret_group:
@@ -127,16 +128,16 @@ def load_level(level, callback):
     turret_group = pg.sprite.Group()
 
     # Create buttons
-    turret1_button = Button(1024, 120, turret_button_image)
-    turret2_button = Button(1024, 220, turret2_button_image)
+    turret1_button = Button(1024, 120, turret_button_image, description="Costs: 100 | Deals 10 damage per second")
+    turret2_button = Button(1024, 220, turret2_button_image, description="Costs: 200 | Deals 20 damage per second")
     back_button = Button(1240, 25, back_to_menu_img)
     restartButton = Button(SCREEN_WIDTH / 2, 500, None, "Retake a year", action=lambda: load_level(level, callback), font_size=60)
 
     turret_buttons = [turret1_button, turret2_button]
 
     spell_buttons = {
-    slowSpell_button := Button(1024, 320, slow_spell_button_image),
-    damageSpell_button := Button(1024, 420, damage_spell_button_image)}
+    slowSpell_button := Button(1024, 320, slow_spell_button_image, description="Costs: 50 | Slows down enemies for 5 seconds"),
+    damageSpell_button := Button(1024, 420, damage_spell_button_image, description="Costs: 50 | Deals 10 per second for 5 seconds")}
 
     cancel_button = Button(1024, 924, cancel_button_image)
 
@@ -252,7 +253,6 @@ def load_level(level, callback):
         if show_spell_range:
             spell_position = pg.mouse.get_pos()
             current_spell.draw_range(screen, spell_position[0], spell_position[1])
-            current_spell.draw_description(screen, pg.font.SysFont("Consolas", 20), 0, 0)
             cancel_button.draw(screen)
             if cancel_button.is_clicked():
                 show_spell_range = False
@@ -261,6 +261,15 @@ def load_level(level, callback):
         # Drawing cooldowns
         slow_spell.draw_cooldown(screen, 1224, 370)
         damage_spell.draw_cooldown(screen, 1224, 470)
+
+        # Draw description if mouse is oer the button
+        for i, turret_button in enumerate(turret_buttons):
+            if turret_button.is_mouse_over():
+                turret_buttons[i].draw_description(screen)
+
+        for spell_button in spell_buttons:
+            if spell_button.is_mouse_over():
+                spell_button.draw_description(screen)
 
         clock.tick(60)
         pg.display.update()

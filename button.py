@@ -1,8 +1,6 @@
 import pygame as pg
 from settingsLoader import load_settings
 
-settings = load_settings()
-
 class Button():
     def __init__(self, x, y, image, text=None, action=None, show_rect = False, font_size=30):
         self.image = image
@@ -30,6 +28,7 @@ class Button():
                 if self.action:
                     self.action()
                     self.clicked = False
+                settings = load_settings()
                 if settings['SOUND_EFFECTS']:
                     pg.mixer.Sound('assets/audio/menu/button_click.mp3').play()
 

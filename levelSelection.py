@@ -2,7 +2,7 @@ import pygame
 import sys
 from levels import level
 from button import Button
-from settingsLoader import load_settings, reset_to_default
+from settingsLoader import load_settings
 
 
 settings = load_settings()
@@ -25,7 +25,6 @@ def main(callback):
     back_to_menu_img = pygame.image.load("graphics/menu/backToMenuButton.png").convert_alpha()
 
     # Set the screen size
-    reset_to_default()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
     back_button = Button(10, 10, back_to_menu_img)
@@ -42,17 +41,25 @@ def main(callback):
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if level1_button.rect.collidepoint(event.pos):
-                    button_click_sound.play()
+                    settings = load_settings()
+                    if settings['SOUND_EFFECTS']:
+                        button_click_sound.play()
                     level.load_level("level1", callback)
                 elif level2_button.rect.collidepoint(event.pos):
-                    button_click_sound.play()
+                    settings = load_settings()
+                    if settings['SOUND_EFFECTS']:
+                        button_click_sound.play()
                     level.load_level("level2", callback)
                 elif level3_button.rect.collidepoint(event.pos):
-                    button_click_sound.play()
+                    settings = load_settings()
+                    if settings['SOUND_EFFECTS']:
+                        button_click_sound.play()
                     level.load_level("level3", callback)
 
                 elif back_button.rect.collidepoint(event.pos):
-                    button_click_sound.play()
+                    settings = load_settings()
+                    if settings['SOUND_EFFECTS']:
+                        button_click_sound.play()
                     callback()
                     return
 

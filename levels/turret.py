@@ -154,15 +154,17 @@ class UpgradePanel:
     def __init__(self, turret, surface):
         self.turret = turret
         self.buttons = [
-            Button(0, 0, None, "Increase damage", self.upgrade_damage, True),
-            Button(0, 50, None, "Increase range", self.upgrade_range, True),
-            Button(0, 100, None, "Sell turret", self.sell_turret, True)
+            Button(0, 0, None, "Increase damage", self.upgrade_damage, True, description="Cost: 50 | Damage +10" ),
+            Button(0, 50, None, "Increase range", self.upgrade_range, True, description="Cost: 75 | Range +15"),
+            Button(0, 100, None, "Sell turret", self.sell_turret, True, description="Sell for half of the cost")
         ]
         self.surface = surface
 
     def draw(self):
         for button in self.buttons:
             button.draw(self.surface)
+            if button.is_mouse_over():
+                button.draw_description(self.surface)
 
     def upgrade_damage(self):
         if self.turret.world.money >= 50:

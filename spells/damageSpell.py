@@ -6,7 +6,6 @@ import threading
 class DamageSpell(Spell):
     def __init__(self, range, duration, cost, cooldown):
         super().__init__("Damage", cost, range, duration, cooldown)
-        self.description = f"Costs {self.cost} Deals 10 damage per second for {self.duration} seconds"
 
     def apply_effect(self, enemy):
         effect_thread = threading.Thread(target=self.effect_thread, args=(enemy,))

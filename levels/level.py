@@ -63,15 +63,25 @@ def load_level(level, callback):
         if current_time - last_enemy_spawn > 5000: # Spawn enemy every 5 seconds
             how_many_spawned += 1 # Increase the number of spawned enemies, to increase the speed of the next one
             enemy_random = random.randint(0, 1) # Randomize enemy type
-            
+
+            speed_multipier = 2 if curr_fast_forward_img == "slower" else 1
+
             if enemy_random == 0: # Integrate enemy
-                new_enemy = Enemy(world.waypoints, integrate_image, speed=2 + how_many_spawned * 0.1, sprite_sheet=integrate_sheet)
+                new_enemy = Enemy(world.waypoints, integrate_image, speed=2 * speed_multipier + how_many_spawned * 0.1, sprite_sheet=integrate_sheet)
             else: # Haskell enemy
-                new_enemy = Enemy(world.waypoints, haskell_image, speed=4, sprite_sheet=haskell_sheet, health=30 + how_many_spawned * 0.15, money_per_kill=50)
+                new_enemy = Enemy(world.waypoints, haskell_image, speed=4 * speed_multipier, sprite_sheet=haskell_sheet, health=30 + how_many_spawned * 0.15, money_per_kill=50)
             enemy_group.add(new_enemy)
             last_enemy_spawn = current_time
 
         return last_enemy_spawn, how_many_spawned
+
+    def change_enemies_speed(multiplier):
+        for enemy in enemy_group:
+            enemy.speed *= multiplier
+
+        for turret in turret_group:
+            turret.cooldown *= 1 / multiplier
+
 
     # Initialize the game
     pg.init()
@@ -110,6 +120,9 @@ def load_level(level, callback):
     haskell_image = pg.image.load("graphics/enemies/haskell.png").convert_alpha()
     haskell_image = pg.transform.scale(haskell_image, (haskell_image.get_width(), haskell_image.get_height()))
     back_to_menu_img = pg.image.load("graphics/menu/backToMenuButton.png").convert_alpha()
+    faster_button_img = pg.image.load("graphics/buttons/faster_button.png").convert_alpha()
+    slower_button_img = pg.image.load("graphics/buttons/slower_button.png").convert_alpha()
+
 
     # Load json data for level
     with open('levels/'+level+'.tmj') as infile:
@@ -132,6 +145,8 @@ def load_level(level, callback):
     turret2_button = Button(1024, 220, turret2_button_image, description="Costs: 200 | Deals 20 damage per second")
     back_button = Button(1240, 25, back_to_menu_img)
     restartButton = Button(SCREEN_WIDTH / 2, 500, None, "Retake a year", action=lambda: load_level(level, callback), font_size=60)
+    fast_forward_button = Button(1024, 520, faster_button_img)
+    curr_fast_forward_img = "faster"
 
     turret_buttons = [turret1_button, turret2_button]
 
@@ -195,6 +210,7 @@ def load_level(level, callback):
         world.draw(screen)
         draw_money_and_points()
         back_button.draw(screen)
+        fast_forward_button.draw(screen)
 
         for turret in turret_group:
             turret.draw(screen)
@@ -257,7 +273,17 @@ def load_level(level, callback):
             if cancel_button.is_clicked():
                 show_spell_range = False
                 current_spell = None
- 
+
+        if fast_forward_button.is_clicked():
+            if curr_fast_forward_img == "faster":
+                fast_forward_button.image = slower_button_img
+                change_enemies_speed(2)
+                curr_fast_forward_img = "slower"
+            else:
+                fast_forward_button.image = faster_button_img
+                change_enemies_speed(1/2)
+                curr_fast_forward_img = "faster"
+
         # Drawing cooldowns
         slow_spell.draw_cooldown(screen, 1224, 370)
         damage_spell.draw_cooldown(screen, 1224, 470)

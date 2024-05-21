@@ -21,6 +21,7 @@ button_click_sound = pygame.mixer.Sound("assets/audio/menu/button_click.mp3")
 back_to_menu_img = pygame.image.load("graphics/menu/backToMenuButton.png").convert_alpha()
 
 def main(callback):
+    settings = load_settings()
     screen = pygame.display.set_mode((1024, 1024))
 
     #Play hall of fame music
@@ -58,7 +59,8 @@ def main(callback):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     if back_button.rect.collidepoint(event.pos):
-                        button_click_sound.play()
+                        if settings['SOUND_EFFECTS']:
+                            button_click_sound.play()
                         callback()
                         return
 
